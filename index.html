@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Film Festival 2026</title>
+  <style>
+    :root{
+      --bg:#000000;
+      --panel:#070707;
+      --panel-2:#0b0b0b;
+      --line:#1d1d1d;
+      --text:#ffffff;
+      --muted:#a8b9d6;
+      --red:#ff2a23;
+      --red-dark:#d91f19;
+      --chip:#111111;
+    }
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x:hidden;
+    }
+
+    body.modal-open{
+      overflow:hidden;
+    }
+
+    img{
+      display:block;
+      width:100%;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .container{
+      width:min(1280px, calc(100% - 48px));
+      margin:0 auto;
+    }
+
+    .serif{
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    /* HERO */
+    .hero{
+      min-height:100vh;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      background:
+        linear-gradient(rgba(0,0,0,.38), rgba(0,0,0,.62)),
+        url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1800&q=80")
+        center center / cover no-repeat;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,.12), rgba(0,0,0,.75));
+      pointer-events:none;
+    }
+
+    .hero-inner{
+      position:relative;
+      z-index:2;
+      width:min(980px, 100%);
+      padding:32px 16px;
+    }
+
+    .hero-icon{
+      color:var(--red);
+      font-size:48px;
+      margin-bottom:18px;
+    }
+
+    .hero h1{
+      font-size:clamp(56px, 8vw, 110px);
+      line-height:.95;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+
+    .hero .year{
+      color:var(--red);
+      display:block;
+      margin-top:10px;
+    }
+
+    .hero-line{
+      width:128px;
+      height:4px;
+      background:var(--red);
+      margin:16px auto 28px;
+    }
+
+    .hero p{
+      font-size:clamp(20px, 2vw, 30px);
+      line-height:1.35;
+      max-width:900px;
+      margin:0 auto 12px;
+    }
+
+    .hero-date{
+      font-size:18px;
+      color:var(--muted);
+      margin-bottom:32px;
+    }
+
+    .hero-buttons{
+      display:flex;
+      justify-content:center;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      min-width:160px;
+      padding:16px 28px;
+      font-size:16px;
+      font-weight:700;
+      border-radius:4px;
+      border:2px solid var(--red);
+      background:var(--red);
+      color:#fff;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .btn:hover{
+      background:var(--red-dark);
+      border-color:var(--red-dark);
+    }
+
+    .btn-outline{
+      background:transparent;
+      border-color:#ffffff;
+      color:#ffffff;
+    }
+
+    .btn-outline:hover{
+      border-color:var(--red);
+      color:var(--red);
+      background:transparent;
+    }
+
+    .scroll-indicator{
+      position:absolute;
+      left:50%;
+      bottom:28px;
+      transform:translateX(-50%);
+      width:26px;
+      height:46px;
+      border:2px solid rgba(255,255,255,.35);
+      border-radius:999px;
+      z-index:3;
+    }
+
+    .scroll-indicator::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:8px;
+      width:4px;
+      height:10px;
+      border-radius:999px;
+      background:#ffffff;
+      transform:translateX(-50%);
+      animation:wheel 1.4s infinite;
+    }
+
+    @keyframes wheel{
+      0%{opacity:0; transform:translate(-50%, 0);}
+      40%{opacity:1;}
+      100%{opacity:0; transform:translate(-50%, 12px);}
+    }
+
+    section{
+      padding:90px 0;
+      border-top:1px solid #141414;
+    }
+
+    .section-head{
+      text-align:center;
+      margin-bottom:42px;
+    }
+
+    .section-head h2{
+      font-size:clamp(38px, 5vw, 72px);
+      line-height:1;
+      margin-bottom:14px;
+    }
+
+    .section-head .red{
+      color:var(--red);
+    }
+
+    .section-line{
+      width:96px;
+      height:4px;
+      background:var(--red);
+      margin:0 auto 18px;
+    }
+
+    .section-head p{
+      color:var(--muted);
+      font-size:17px;
+    }
+
+    /* SCHEDULE */
+    .schedule-subdate{
+      text-align:center;
+      color:var(--muted);
+      font-size:18px;
+      margin-top:-8px;
+      margin-bottom:26px;
+    }
+
+    .schedule-grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:22px;
+    }
+
+    .schedule-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:26px 28px;
+      min-height:170px;
+    }
+
+    .schedule-top{
+      display:flex;
+      gap:20px;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+
+    .schedule-day{
+      min-width:58px;
+      text-align:center;
+      font-family: Georgia, "Times New Roman", serif;
+      line-height:1;
+    }
+
+    .schedule-day .date{
+      font-size:32px;
+      color:#fff;
+      margin-bottom:4px;
+    }
+
+    .schedule-day .dow{
+      font-size:15px;
+      color:var(--muted);
+      letter-spacing:1px;
+    }
+
+    .schedule-main{
+      flex:1;
+    }
+
+    .schedule-time{
+      font-size:15px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    .schedule-title{
+      font-size:18px;
+      font-weight:700;
+      margin-bottom:10px;
+      line-height:1.4;
+    }
+
+    .schedule-place{
+      font-size:15px;
+      color:var(--muted);
+      margin-bottom:16px;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:64px;
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:13px;
+      background:#141414;
+      color:#dcdcdc;
+    }
+
+    .tag.red{
+      background:var(--red);
+      color:#fff;
+    }
+
+    /* RANKING */
+    .ranking-wrap{
+      overflow:hidden;
+      position:relative;
+    }
+
+    .ranking-track{
+      display:flex;
+      gap:22px;
+      width:max-content;
+      animation:rankMove 34s linear infinite;
+    }
+
+    .ranking-wrap:hover .ranking-track{
+      animation-play-state:paused;
+    }
+
+    @keyframes rankMove{
+      from{transform:translateX(0);}
+      to{transform:translateX(-50%);}
+    }
+
+    .rank-card{
+      width:260px;
+      flex:0 0 auto;
+      border-radius:10px;
+      overflow:hidden;
+      position:relative;
+      cursor:pointer;
+      background:var(--panel);
+      border:1px solid var(--line);
+    }
+
+    .rank-poster{
+      height:390px;
+      background-size:cover;
+      background-position:center;
+    }
+
+    .rank-no{
+      position:absolute;
+      top:16px;
+      left:16px;
+      width:50px;
+      height:50px;
+      border-radius:50%;
+      background:var(--red);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      font-family: Georgia, "Times New Roman", serif;
+      z-index:2;
+    }
+
+    .rank-rating{
+      position:absolute;
+      top:16px;
+      right:16px;
+      background:#1a1a1a;
+      color:#fff;
+      padding:8px 10px;
+      border-radius:6px;
+      font-size:14px;
+      font-weight:700;
+      z-index:2;
+    }
+
+    .rank-info{
+      padding:18px 18px 16px;
+    }
+
+    .rank-title{
+      font-size:18px;
+      font-weight:700;
+      margin-bottom:5px;
+    }
+
+    .rank-meta{
+      color:var(--muted);
+      font-size:14px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    /* FILTERS */
+    .filters{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-bottom:38px;
+    }
+
+    .filter-btn{
+      background:transparent;
+      color:#bcd1f1;
+      border:1px solid #2a2a2a;
+      padding:12px 22px;
+      border-radius:999px;
+      font-size:15px;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover{
+      background:var(--red);
+      border-color:var(--red);
+      color:#fff;
+    }
+
+    .movie-grid{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:24px;
+    }
+
+    .movie-card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:10px;
+      overflow:hidden;
+      cursor:pointer;
+      transition:.2s ease;
+      position:relative;
+    }
+
+    .movie-card:hover{
+      transform:translateY(-4px);
+      border-color:var(--red);
+    }
+
+    .movie-card.hidden{
+      display:none;
+    }
+
+    .movie-poster{
+      height:420px;
+      background-size:cover;
+      background-position:center;
+      position:relative;
+    }
+
+    .movie-rating{
+      position:absolute;
+      top:12px;
+      right:12px;
+      background:#1a1a1a;
+      color:#fff;
+      padding:8px 10px;
+      border-radius:6px;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .movie-info{
+      padding:18px;
+    }
+
+    .movie-title{
+      font-size:17px;
+      font-weight:700;
+      margin-bottom:8px;
+    }
+
+    .movie-sub{
+      display:flex;
+      justify-content:space-between;
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:8px;
+      gap:10px;
+    }
+
+    .movie-year{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    /* DETAIL OVERLAY */
+    .detail-overlay{
+      position:fixed;
+      inset:0;
+      background:#000;
+      z-index:5000;
+      display:none;
+      overflow-y:auto;
+    }
+
+    .detail-overlay.open{
+      display:block;
+    }
+
+    .detail-inner{
+      width:min(1240px, calc(100% - 48px));
+      margin:0 auto;
+      padding:36px 0 70px;
+    }
+
+    .back-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      background:transparent;
+      color:#fff;
+      border:1px solid #2d2d2d;
+      padding:12px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      margin-bottom:26px;
+      font-size:18px;
+    }
+
+    .detail-top{
+      display:grid;
+      grid-template-columns:380px 1fr;
+      gap:48px;
+      align-items:start;
+      margin-bottom:64px;
+    }
+
+    .detail-poster{
+      width:100%;
+      height:540px;
+      border-radius:6px;
+      background-size:cover;
+      background-position:center;
+    }
+
+    .detail-main{
+      padding-top:18px;
+    }
+
+    .detail-genre{
+      display:inline-flex;
+      background:var(--red);
+      color:#fff;
+      border-radius:999px;
+      padding:8px 16px;
+      font-size:16px;
+      margin-bottom:24px;
+    }
+
+    .detail-title{
+      font-size:clamp(54px, 6vw, 84px);
+      line-height:.95;
+      margin-bottom:18px;
+    }
+
+    .detail-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:24px;
+      color:#fff;
+      font-size:18px;
+      margin-bottom:28px;
+    }
+
+    .detail-director-label{
+      color:var(--muted);
+      font-size:16px;
+      margin-bottom:4px;
+    }
+
+    .detail-director{
+      font-size:20px;
+      margin-bottom:28px;
+    }
+
+    .detail-book{
+      min-width:170px;
+      padding:16px 26px;
+      background:var(--red);
+      border:none;
+      color:#fff;
+      font-size:18px;
+      font-weight:700;
+      border-radius:4px;
+      cursor:pointer;
+    }
+
+    .detail-book:hover{
+      background:var(--red-dark);
+    }
+
+    .detail-bottom{
+      display:grid;
+      grid-template-columns:1.45fr .8fr;
+      gap:56px;
+      align-items:start;
+    }
+
+    .detail-block-title{
+      font-size:34px;
+      margin-bottom:12px;
+    }
+
+    .detail-block-line{
+      width:64px;
+      height:4px;
+      background:var(--red);
+      margin-bottom:28px;
+    }
+
+    .synopsis-text{
+      font-size:18px;
+      line-height:1.9;
+      max-width:760px;
+    }
+
+    .side-col{
+      display:flex;
+      flex-direction:column;
+      gap:28px;
+    }
+
+    .side-card{
+      border:1px solid var(--line);
+      background:#060606;
+      border-radius:10px;
+      padding:24px 26px;
+    }
+
+    .side-card h4{
+      font-size:24px;
+      margin-bottom:18px;
+    }
+
+    .cast-list,
+    .time-list{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      font-size:18px;
+      color:#e8e8e8;
+    }
+
+    .time-list li{
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      align-items:center;
+    }
+
+    .time-list span:last-child{
+      color:var(--red);
+      font-weight:700;
+    }
+
+    @media (max-width: 1200px){
+      .movie-grid{
+        grid-template-columns:repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 900px){
+      .schedule-grid{
+        grid-template-columns:1fr;
+      }
+
+      .movie-grid{
+        grid-template-columns:repeat(2, 1fr);
+      }
+
+      .detail-top,
+      .detail-bottom{
+        grid-template-columns:1fr;
+      }
+
+      .detail-poster{
+        height:520px;
+        max-width:420px;
+      }
+    }
+
+    @media (max-width: 600px){
+      .container,
+      .detail-inner{
+        width:min(100% - 28px, 1240px);
+      }
+
+      .hero h1{
+        font-size:58px;
+      }
+
+      .schedule-card{
+        padding:22px;
+      }
+
+      .movie-grid{
+        grid-template-columns:1fr;
+      }
+
+      .rank-card{
+        width:220px;
+      }
+
+      .rank-poster{
+        height:330px;
+      }
+
+      .movie-poster{
+        height:360px;
+      }
+
+      .detail-title{
+        font-size:52px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <div class="hero-icon">🎞</div>
+      <h1 class="serif">
+        Film Festival
+        <span class="year">2026</span>
+      </h1>
+      <div class="hero-line"></div>
+      <p>Experience the finest cinematic masterpieces from around the world</p>
+      <div class="hero-date">April 15-20, 2026</div>
+      <div class="hero-buttons">
+        <button class="btn" onclick="scrollToSection('now-screening')">View Films</button>
+        <button class="btn btn-outline" onclick="scrollToSection('festival-schedule')">Festival Schedule</button>
+      </div>
+    </div>
+    <div class="scroll-indicator"></div>
+  </section>
+
+  <section id="festival-schedule">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="serif">Festival Schedule</h2>
+        <div class="section-line"></div>
+        <p>April 15-20, 2026</p>
+      </div>
+
+      <div class="schedule-grid" id="scheduleGrid"></div>
+    </div>
+  </section>
+
+  <section id="top-ranked">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="serif"><span class="red">🏆</span> Top Ranked Films</h2>
+        <div class="section-line"></div>
+        <p>Audience favorites of Film Festival 2026</p>
+      </div>
+
+      <div class="ranking-wrap">
+        <div class="ranking-track" id="rankingTrack"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="now-screening">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="serif">Now Screening</h2>
+        <div class="section-line"></div>
+        <p>Explore our curated selection of films</p>
+      </div>
+
+      <div class="filters" id="filters"></div>
+      <div class="movie-grid" id="movieGrid"></div>
+    </div>
+  </section>
+
+  <div class="detail-overlay" id="detailOverlay">
+    <div class="detail-inner">
+      <button class="back-btn" id="closeDetail">← Back</button>
+
+      <div class="detail-top">
+        <div class="detail-poster" id="detailPoster"></div>
+
+        <div class="detail-main">
+          <div class="detail-genre" id="detailGenre"></div>
+          <h2 class="detail-title serif" id="detailTitle"></h2>
+
+          <div class="detail-meta">
+            <span id="detailRating"></span>
+            <span id="detailRuntime"></span>
+            <span id="detailYear"></span>
+          </div>
+
+          <div class="detail-director-label">Director</div>
+          <div class="detail-director" id="detailDirector"></div>
+
+          <button class="detail-book">Book Now</button>
+        </div>
+      </div>
+
+      <div class="detail-bottom">
+        <div>
+          <h3 class="detail-block-title serif">Synopsis</h3>
+          <div class="detail-block-line"></div>
+          <div class="synopsis-text" id="detailSynopsis"></div>
+        </div>
+
+        <div class="side-col">
+          <div class="side-card">
+            <h4 class="serif">Cast</h4>
+            <ul class="cast-list" id="detailCast"></ul>
+          </div>
+
+          <div class="side-card">
+            <h4 class="serif">Screening Times</h4>
+            <ul class="time-list" id="detailTimes"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const movies = [
+      {
+        id: "shadow-protocol",
+        title: "Shadow Protocol",
+        genre: "Thriller",
+        runtime: "128 min",
+        year: "2026",
+        rating: "8.4",
+        director: "Ethan Vale",
+        poster: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "A covert operation collapses after a classified leak exposes the identities of undercover agents. As the mission unravels, one operative must trace the betrayal through a chain of political secrets, false identities, and manipulated evidence before the entire protocol is erased forever.",
+        cast: ["Liam Carter", "Sofia Drake", "Miles Bennett"],
+        times: [["Monday, Apr 15", "21:00"], ["Wednesday, Apr 17", "18:30"], ["Friday, Apr 19", "20:00"]]
+      },
+      {
+        id: "echoes-of-tomorrow",
+        title: "Echoes of Tomorrow",
+        genre: "Sci-Fi",
+        runtime: "145 min",
+        year: "2026",
+        rating: "9.1",
+        director: "Adrian Cole",
+        poster: "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "In a near-future city governed by predictive technology, a systems architect begins hearing fragments of events that have not yet happened. As the visions intensify, she discovers a hidden program that can rewrite memory, time, and personal history.",
+        cast: ["Aria Knox", "Daniel Crest", "Jun Harper"],
+        times: [["Tuesday, Apr 16", "20:00"], ["Thursday, Apr 18", "16:00"], ["Saturday, Apr 20", "19:00"]]
+      },
+      {
+        id: "the-haunting-hour",
+        title: "The Haunting Hour",
+        genre: "Horror",
+        runtime: "105 min",
+        year: "2026",
+        rating: "7.8",
+        director: "Naomi Frost",
+        poster: "https://images.unsplash.com/photo-1518081461904-9d8f136351c8?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "A documentary crew investigating a string of disappearances in an abandoned theater becomes trapped inside the building after midnight. What begins as a simple recording session turns into a desperate attempt to escape a place that seems alive with memory and grief.",
+        cast: ["Eva Sinclair", "Jon Mercer", "Rin Hollow"],
+        times: [["Wednesday, Apr 17", "18:00"], ["Friday, Apr 19", "22:30"], ["Saturday, Apr 20", "23:30"]]
+      },
+      {
+        id: "hearts-unbound",
+        title: "Hearts Unbound",
+        genre: "Romance",
+        runtime: "118 min",
+        year: "2026",
+        rating: "8.7",
+        director: "Mila Rowan",
+        poster: "https://images.unsplash.com/photo-1516575150278-77136aed6920?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "Two strangers meet during a gallery blackout and begin exchanging letters without revealing their names. As the correspondence deepens, the possibility of love grows stronger than the fear of who they might really be outside the darkness where they first connected.",
+        cast: ["Lena Hart", "Noah Sterling", "Clara Moon"],
+        times: [["Wednesday, Apr 17", "21:30"], ["Friday, Apr 19", "16:00"], ["Saturday, Apr 20", "18:00"]]
+      },
+      {
+        id: "the-last-stand",
+        title: "The Last Stand",
+        genre: "Action",
+        runtime: "135 min",
+        year: "2026",
+        rating: "8.0",
+        director: "Marcus Kane",
+        poster: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "When a fortified border town becomes the final barrier against a powerful militia, a retired commander is forced back into battle. Outnumbered and surrounded, he must unite a fractured community for one final resistance.",
+        cast: ["Kai Mercer", "Eli Rhodes", "Nora Flint"],
+        times: [["Thursday, Apr 18", "19:30"], ["Saturday, Apr 20", "20:30"]]
+      },
+      {
+        id: "mystic-realms",
+        title: "Mystic Realms",
+        genre: "Fantasy",
+        runtime: "152 min",
+        year: "2026",
+        rating: "8.9",
+        director: "Elena Frost",
+        poster: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "A young sorcerer discovers an ancient prophecy that could save or doom the magical realm. Embarking on a perilous journey, they must master forbidden powers and forge unlikely alliances. A breathtaking fantasy adventure filled with wonder and magic.",
+        cast: ["Noah Sterling", "Luna Bright", "Phoenix Dawn"],
+        times: [["Monday, Apr 15", "19:30"], ["Thursday, Apr 18", "21:00"], ["Friday, Apr 19", "17:00"]]
+      },
+      {
+        id: "neon-nights",
+        title: "Neon Nights",
+        genre: "Drama",
+        runtime: "125 min",
+        year: "2026",
+        rating: "8.5",
+        director: "J. Rivera",
+        poster: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "A city of reflections, sleepless streets, and private regrets becomes the backdrop for intersecting lives over one winter weekend. As strangers collide under neon light, each must decide what to hide and what to finally let go.",
+        cast: ["Mina Ford", "Lucas Vale", "Avery Quinn"],
+        times: [["Friday, Apr 19", "20:00"], ["Saturday, Apr 20", "21:30"]]
+      },
+      {
+        id: "desert-reckoning",
+        title: "Desert Reckoning",
+        genre: "Western",
+        runtime: "132 min",
+        year: "2026",
+        rating: "7.9",
+        director: "Cole Mercer",
+        poster: "https://images.unsplash.com/photo-1513642532973-d31b6557fa68?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "A former outlaw returns to a dying frontier settlement when a land dispute turns violent. Haunted by old loyalties and unfinished debts, he must choose between disappearing forever or confronting the men who destroyed his past.",
+        cast: ["Wyatt Sloan", "Grace Hollow", "Dean Walker"],
+        times: [["Thursday, Apr 18", "17:00"], ["Saturday, Apr 20", "15:00"]]
+      },
+      {
+        id: "midnight-mysteries",
+        title: "Midnight Mysteries",
+        genre: "Thriller",
+        runtime: "115 min",
+        year: "2026",
+        rating: "8.2",
+        director: "Talia West",
+        poster: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "A journalist investigating a string of unsolved disappearances receives a map marked with names only she should know. Each clue pulls her deeper into a conspiracy that has been waiting for her to notice it.",
+        cast: ["Rachel Voss", "Ian Cole", "Mira Dane"],
+        times: [["Tuesday, Apr 16", "22:00"], ["Friday, Apr 19", "18:30"]]
+      },
+      {
+        id: "laughter-lines",
+        title: "Laughter Lines",
+        genre: "Comedy",
+        runtime: "98 min",
+        year: "2026",
+        rating: "7.5",
+        director: "Penny Brooks",
+        poster: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "A struggling stand-up comic accidentally becomes the face of a viral wellness movement after one disastrous performance. The more successful he becomes, the harder it is to admit the entire thing started as a joke.",
+        cast: ["Milo Reed", "Casey Bloom", "Jade Carter"],
+        times: [["Wednesday, Apr 17", "16:30"], ["Saturday, Apr 20", "13:00"]]
+      },
+      {
+        id: "emotional-tides",
+        title: "Emotional Tides",
+        genre: "Drama",
+        runtime: "140 min",
+        year: "2026",
+        rating: "8.6",
+        director: "Sora Lin",
+        poster: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "Returning to her coastal hometown after years away, a pianist confronts the memories she left behind and the family silence that shaped her life. Set against stormy seas and fading summers, the film unfolds as an intimate portrait of grief and healing.",
+        cast: ["Hana Reed", "Jonah Park", "Elaine Cho"],
+        times: [["Thursday, Apr 18", "14:30"], ["Sunday, Apr 20", "16:00"]]
+      },
+      {
+        id: "city-of-shadows",
+        title: "City of Shadows",
+        genre: "Action",
+        runtime: "122 min",
+        year: "2026",
+        rating: "7.7",
+        director: "Victor Hale",
+        poster: "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?auto=format&fit=crop&w=1000&q=80",
+        synopsis: "In a metropolis ruled by private security syndicates, a former detective is drawn back into the streets when a missing witness becomes the key to exposing the city’s hidden rulers. Fast chases, brutal choices, and a collapsing moral line define the pursuit.",
+        cast: ["Ryan Cross", "Selene Hart", "Leo Strade"],
+        times: [["Friday, Apr 19", "23:00"], ["Saturday, Apr 20", "20:00"]]
+      }
+    ];
+
+    const scheduleItems = [
+      {date:"15", dow:"MON", time:"19:00", title:"Opening Ceremony", place:"Grand Theater", tag:"PREMIERE", red:true},
+      {date:"15", dow:"MON", time:"21:00", title:"Shadow Protocol - Premiere", place:"Grand Theater", tag:"PREMIERE", red:true},
+      {date:"16", dow:"TUE", time:"14:00", title:"Industry Panel: Future of Cinema", place:"Conference Hall", tag:"PANEL", red:false},
+      {date:"16", dow:"TUE", time:"20:00", title:"Echoes of Tomorrow - Premiere", place:"Cinema 1", tag:"PREMIERE", red:true},
+      {date:"17", dow:"WED", time:"18:00", title:"The Haunting Hour - Screening", place:"Cinema 2", tag:"SCREENING", red:false},
+      {date:"17", dow:"WED", time:"21:30", title:"Hearts Unbound - Premiere", place:"Grand Theater", tag:"PREMIERE", red:true},
+      {date:"18", dow:"THU", time:"15:00", title:"Directors Roundtable", place:"Studio A", tag:"PANEL", red:false},
+      {date:"18", dow:"THU", time:"19:30", title:"The Last Stand - Premiere", place:"Cinema 1", tag:"PREMIERE", red:true},
+      {date:"19", dow:"FRI", time:"17:00", title:"Mystic Realms - Screening", place:"Cinema 3", tag:"SCREENING", red:false},
+      {date:"19", dow:"FRI", time:"20:00", title:"Neon Nights - Premiere", place:"Grand Theater", tag:"PREMIERE", red:true},
+      {date:"20", dow:"SAT", time:"14:00", title:"Film Festival Marathon", place:"All Cinemas", tag:"SCREENING", red:false},
+      {date:"20", dow:"SAT", time:"22:00", title:"Awards Ceremony", place:"Grand Theater", tag:"AWARDS", red:true}
+    ];
+
+    const rankingOrder = [
+      "shadow-protocol",
+      "echoes-of-tomorrow",
+      "the-haunting-hour",
+      "hearts-unbound",
+      "the-last-stand",
+      "mystic-realms",
+      "neon-nights",
+      "desert-reckoning"
+    ];
+
+    const filters = ["All","Action","Romance","Thriller","Comedy","Horror","Drama","Sci-Fi","Fantasy","Western"];
+
+    const scheduleGrid = document.getElementById("scheduleGrid");
+    const rankingTrack = document.getElementById("rankingTrack");
+    const filtersWrap = document.getElementById("filters");
+    const movieGrid = document.getElementById("movieGrid");
+
+    const overlay = document.getElementById("detailOverlay");
+    const closeDetail = document.getElementById("closeDetail");
+    const detailPoster = document.getElementById("detailPoster");
+    const detailGenre = document.getElementById("detailGenre");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailRating = document.getElementById("detailRating");
+    const detailRuntime = document.getElementById("detailRuntime");
+    const detailYear = document.getElementById("detailYear");
+    const detailDirector = document.getElementById("detailDirector");
+    const detailSynopsis = document.getElementById("detailSynopsis");
+    const detailCast = document.getElementById("detailCast");
+    const detailTimes = document.getElementById("detailTimes");
+
+    function scrollToSection(id){
+      document.getElementById(id).scrollIntoView({behavior:"smooth"});
+    }
+
+    function renderSchedule(){
+      scheduleGrid.innerHTML = "";
+      scheduleItems.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "schedule-card";
+        card.innerHTML = `
+          <div class="schedule-top">
+            <div class="schedule-day">
+              <div class="date">${item.date}</div>
+              <div class="dow">${item.dow}</div>
+            </div>
+            <div class="schedule-main">
+              <div class="schedule-time">◷ ${item.time}</div>
+              <div class="schedule-title">${item.title}</div>
+              <div class="schedule-place">⌖ ${item.place}</div>
+              <span class="tag ${item.red ? "red" : ""}">${item.tag}</span>
+            </div>
+          </div>
+        `;
+        scheduleGrid.appendChild(card);
+      });
+    }
+
+    function renderRanking(){
+      const rankedMovies = rankingOrder.map(id => movies.find(m => m.id === id)).filter(Boolean);
+      const doubled = [...rankedMovies, ...rankedMovies];
+
+      rankingTrack.innerHTML = "";
+      doubled.forEach((movie, index) => {
+        const realIndex = rankedMovies.findIndex(m => m.id === movie.id) + 1;
+        const card = document.createElement("div");
+        card.className = "rank-card";
+        card.innerHTML = `
+          <div class="rank-no">${realIndex}</div>
+          <div class="rank-rating">⭐ ${movie.rating}</div>
+          <div class="rank-poster" style="background-image:url('${movie.poster}')"></div>
+        `;
+        card.addEventListener("click", () => openDetail(movie.id));
+        rankingTrack.appendChild(card);
+      });
+    }
+
+    function renderFilters(active = "All"){
+      filtersWrap.innerHTML = "";
+      filters.forEach(filter => {
+        const btn = document.createElement("button");
+        btn.className = "filter-btn" + (filter === active ? " active" : "");
+        btn.textContent = filter;
+        btn.addEventListener("click", () => {
+          renderFilters(filter);
+          renderMovies(filter);
+        });
+        filtersWrap.appendChild(btn);
+      });
+    }
+
+    function renderMovies(active = "All"){
+      movieGrid.innerHTML = "";
+
+      const filtered = active === "All"
+        ? movies
+        : movies.filter(movie => movie.genre === active);
+
+      filtered.forEach(movie => {
+        const card = document.createElement("div");
+        card.className = "movie-card";
+        card.innerHTML = `
+          <div class="movie-poster" style="background-image:url('${movie.poster}')">
+            <div class="movie-rating">⭐ ${movie.rating}</div>
+          </div>
+          <div class="movie-info">
+            <div class="movie-title">${movie.title}</div>
+            <div class="movie-sub">
+              <span>${movie.genre}</span>
+              <span>${movie.runtime}</span>
+            </div>
+            <div class="movie-year">${movie.year}</div>
+          </div>
+        `;
+        card.addEventListener("click", () => openDetail(movie.id));
+        movieGrid.appendChild(card);
+      });
+    }
+
+    function openDetail(id){
+      const movie = movies.find(m => m.id === id);
+      if(!movie) return;
+
+      detailPoster.style.backgroundImage = `url('${movie.poster}')`;
+      detailGenre.textContent = movie.genre;
+      detailTitle.textContent = movie.title;
+      detailRating.textContent = `⭐ ${movie.rating}`;
+      detailRuntime.textContent = `◷ ${movie.runtime}`;
+      detailYear.textContent = `🗓 ${movie.year}`;
+      detailDirector.textContent = movie.director;
+      detailSynopsis.textContent = movie.synopsis;
+
+      detailCast.innerHTML = "";
+      movie.cast.forEach(name => {
+        const li = document.createElement("li");
+        li.textContent = name;
+        detailCast.appendChild(li);
+      });
+
+      detailTimes.innerHTML = "";
+      movie.times.forEach(time => {
+        const li = document.createElement("li");
+        li.innerHTML = `<span>${time[0]}</span><span>${time[1]}</span>`;
+        detailTimes.appendChild(li);
+      });
+
+      overlay.classList.add("open");
+      document.body.classList.add("modal-open");
+      overlay.scrollTop = 0;
+    }
+
+    function closeOverlay(){
+      overlay.classList.remove("open");
+      document.body.classList.remove("modal-open");
+    }
+
+    closeDetail.addEventListener("click", closeOverlay);
+
+    overlay.addEventListener("click", (e) => {
+      if(e.target === overlay){
+        closeOverlay();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && overlay.classList.contains("open")){
+        closeOverlay();
+      }
+    });
+
+    renderSchedule();
+    renderRanking();
+    renderFilters();
+    renderMovies();
+  </script>
+</body>
+</html>
