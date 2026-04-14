@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FILM FESTIVAL 2026 | Refined Neon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-black: #050505;
+            --accent-red: #ff0000;
+            /* 네온 효과 약하게 조절 (빛의 퍼짐 수치를 줄임) */
+            --neon-glow-soft: 0 0 5px #ff0000, 0 0 12px rgba(255, 0, 0, 0.5);
+            --text-white: #FFFFFF;
+            --text-gray: #A0A0A0;
+            --card-bg: #121212;
+            --serif: 'Playfair Display', serif;
+            --sans: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { background-color: var(--bg-black); color: var(--text-white); font-family: var(--sans); overflow-x: hidden; }
+
+        /* 1. Zoom Section */
+        .zoom-wrapper { height: 300vh; position: relative; }
+        .zoom-sticky {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            display: flex; justify-content: center; align-items: center; overflow: hidden; z-index: 100;
+        }
+        .hero-title {
+            position: absolute; z-index: 110; text-align: center; pointer-events: none;
+            font-family: var(--serif); font-size: clamp(2.5rem, 6vw, 5.5rem); transition: opacity 0.3s;
+            color: #fff;
+        }
+        .zoom-image-container {
+            width: 350px; height: 200px;
+            background: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=2070') no-repeat center/cover;
+            border: 1px solid var(--accent-red); transition: transform 0.1s ease-out;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+        }
+        .enter-btn {
+            position: absolute; z-index: 130; padding: 12px 28px;
+            background: transparent; color: white; border: 2px solid var(--accent-red);
+            font-weight: 700; font-size: 0.85rem; letter-spacing: 2px; cursor: pointer;
+            opacity: 0; transform: translateY(20px); transition: all 0.5s;
+            pointer-events: none; text-transform: uppercase;
+            box-shadow: inset 0 0 8px var(--accent-red), 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        .enter-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .enter-btn:hover { background: var(--accent-red); box-shadow: 0 0 25px var(--accent-red); }
+
+        /* 2. Main Header */
+        #main-content { display: none; opacity: 0; transition: opacity 1s; padding-top: 80px; }
+        header {
+            position: fixed; top: 0; width: 100%; padding: 20px 50px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; background: rgba(0,0,0,0.95); border-bottom: 1px solid #222;
+        }
+        .logo { font-family: var(--serif); font-size: 1.4rem; color: #fff; font-weight: bold; cursor: pointer; letter-spacing: 2px; }
+        .logo span { color: var(--accent-red); text-shadow: 0 0 5px var(--accent-red); }
+        .header-right { display: flex; align-items: center; gap: 40px; }
+        nav ul { display: flex; gap: 30px; list-style: none; font-size: 0.8rem; }
+        nav a { text-decoration: none; color: white; transition: 0.3s; }
+        nav a:hover { color: var(--accent-red); }
+        .login-btn { padding: 8px 20px; border: 1px solid var(--accent-red); color: white; background: transparent; cursor: pointer; transition: 0.3s; font-weight: 700; font-size: 0.75rem; }
+        .login-btn:hover { background: var(--accent-red); box-shadow: 0 0 15px var(--accent-red); }
+
+        /* 3. Ranking & Movies */
+        .section-container { padding: 100px 50px; max-width: 1400px; margin: auto; }
+        .section-title { font-family: var(--serif); font-size: 3rem; text-align: center; margin-bottom: 50px; }
+        .ranking-wrapper { overflow: hidden; padding: 60px 0; background: #000; margin-bottom: 50px; }
+        .carousel-track { display: flex; width: fit-content; animation: scroll 40s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .rank-card { width: 230px; margin: 0 20px; position: relative; flex-shrink: 0; }
+        .rank-card img { width: 100%; height: 330px; object-fit: cover; border: 1px solid #222; }
+        .rank-num { position: absolute; bottom: -25px; left: -15px; font-family: var(--serif); font-size: 6rem; color: transparent; -webkit-text-stroke: 1.5px var(--accent-red); line-height: 1; filter: drop-shadow(0 0 8px var(--accent-red)); }
+
+        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; }
+        .movie-item { background: var(--card-bg); cursor: pointer; transition: 0.4s; border: 1px solid #1a1a1a; }
+        .movie-item:hover { border-color: var(--accent-red); box-shadow: 0 0 20px rgba(255, 0, 0, 0.3); }
+        .movie-item img { width: 100%; height: 320px; object-fit: cover; }
+
+        /* --- 4. 예매하기 모달 (네온 약하게 수정됨) --- */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { 
+            max-width: 850px; width: 100%; display: flex; gap: 40px; 
+            background: #0f0f0f; padding: 45px; 
+            border: 1px solid rgba(255, 0, 0, 0.3); /* 테두리 투명도 조절 */
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.15); /* 전체 광채 약하게 */
+        }
+        .modal-poster img { 
+            width: 300px; 
+            border: 1px solid rgba(255, 0, 0, 0.5); 
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); /* 포스터 네온 약하게 */
+        }
+        .modal-info h2 { font-family: var(--serif); font-size: 2.5rem; margin-bottom: 10px; }
+        /* 제목 텍스트 네온 제거 혹은 아주 미세하게 */
+        .modal-info h2 { text-shadow: 0 0 5px rgba(255, 0, 0, 0.2); } 
+        
+        .book-btn { 
+            background: var(--accent-red); color: white; 
+            padding: 14px 40px; border: none; cursor: pointer; 
+            font-weight: bold; margin-top: 25px; 
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); /* 버튼 네온 약하게 */
+        }
+        .book-btn:hover { background: #d40000; box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
+
+        footer { padding: 80px 50px; text-align: center; color: #333; font-size: 0.8rem; border-top: 1px solid #111; }
+    </style>
+</head>
+<body>
+
+    <div class="zoom-wrapper" id="zoomWrapper">
+        <div class="zoom-sticky">
+            <div class="hero-title" id="heroTitle">
+                <p style="letter-spacing: 12px; font-size: 0.8rem; margin-bottom: 15px; color: #888;">THE 2026 EDITION</p>
+                <h1>FILM <span style="color:var(--accent-red)">FESTIVAL</span></h1>
+            </div>
+            <div class="zoom-image-container" id="zoomContainer"></div>
+            <button class="enter-btn" id="enterBtn" onclick="startFestival()">Explore Festival</button>
+        </div>
+    </div>
+
+    <main id="main-content">
+        <header>
+            <div class="logo" onclick="location.reload()">FILM <span>FESTIVAL</span></div>
+            <div class="header-right">
+                <nav>
+                    <ul>
+                        <li><a href="#schedule">SCHEDULE</a></li>
+                        <li><a href="#ranking">TOP 10</a></li>
+                        <li><a href="#movies">LINEUP</a></li>
+                    </ul>
+                </nav>
+                <button class="login-btn">LOGIN</button>
+            </div>
+        </header>
+
+        <section id="schedule" class="section-container">
+            <h2 class="section-title">SCHEDULE</h2>
+            <div style="display: flex; justify-content: space-between; border: 1px solid #222; text-align: center;">
+                <div style="flex:1; padding: 40px; border-right: 1px solid #222;"><p style="color:var(--accent-red); font-weight: bold;">APR 12</p><h4>Opening Day</h4></div>
+                <div style="flex:1; padding: 40px; border-right: 1px solid #222;"><p style="color:var(--accent-red); font-weight: bold;">APR 13</p><h4>Talk Sessions</h4></div>
+                <div style="flex:1; padding: 40px;"><p style="color:var(--accent-red); font-weight: bold;">APR 14</p><h4>Awards Gala</h4></div>
+            </div>
+        </section>
+
+        <section id="ranking" class="ranking-wrapper">
+            <div class="carousel-track" id="rankingTrack"></div>
+        </section>
+
+        <section id="movies" class="section-container">
+            <h2 class="section-title">LINEUP</h2>
+            <div class="movie-grid" id="movieGrid"></div>
+        </section>
+
+        <footer>&copy; 2026 FILM FESTIVAL. ALL RIGHTS RESERVED.</footer>
+    </main>
+
+    <div class="modal" id="movieModal">
+        <div class="modal-content">
+            <span onclick="closeModal()" style="position: absolute; top: 20px; right: 30px; font-size: 2.2rem; cursor: pointer; color: var(--accent-red);">&times;</span>
+            <div class="modal-poster" id="modalPoster"></div>
+            <div class="modal-info">
+                <h2 id="modalTitle"></h2>
+                <p id="modalGenre" style="color:var(--accent-red); font-weight: 700; margin-bottom: 20px; font-size: 0.9rem; letter-spacing: 1px;"></p>
+                <p id="modalDesc" style="color:var(--text-gray); font-size: 1rem; line-height: 1.7; margin-bottom: 30px;"></p>
+                <button class="book-btn">BOOK TICKETS</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const zoomContainer = document.getElementById('zoomContainer');
+        const heroTitle = document.getElementById('heroTitle');
+        const enterBtn = document.getElementById('enterBtn');
+        const zoomWrapper = document.getElementById('zoomWrapper');
+        const mainContent = document.getElementById('main-content');
+
+        window.addEventListener('scroll', () => {
+            if (mainContent.style.display === 'block') return;
+            const scrollPercent = window.scrollY / (zoomWrapper.offsetHeight - window.innerHeight);
+            const scale = 1 + (scrollPercent * 12);
+            zoomContainer.style.transform = `scale(${scale})`;
+            heroTitle.style.opacity = 1 - (scrollPercent * 4);
+            if (scrollPercent > 0.95) enterBtn.classList.add('visible');
+            else enterBtn.classList.remove('visible');
+        });
+
+        function startFestival() {
+            zoomWrapper.style.display = 'none';
+            mainContent.style.display = 'block';
+            setTimeout(() => { mainContent.style.opacity = 1; }, 50);
+            window.scrollTo(0, 0);
+            initData();
+        }
+
+        const movieData = [
+            { title: "Midnight City", genre: "Action", img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400", desc: "A gripping tale of survival in a world of constant neon and shadows." },
+            { title: "Velvet Sky", genre: "Romance", img: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=400", desc: "Finding beauty in the smallest moments of an urban landscape." },
+            { title: "The Whisper", genre: "Thriller", img: "https://images.unsplash.com/photo-1594908900066-3f47337549d8?q=80&w=400", desc: "Some secrets are better left buried in the dark corners of the city." }
+        ];
+        const movies = Array.from({length: 15}, (_, i) => ({...movieData[i%3], title: `${movieData[i%3].title} ${i+1}`}));
+
+        function initData() {
+            const track = document.getElementById('rankingTrack');
+            [...movies.slice(0, 10), ...movies.slice(0, 10)].forEach((m, i) => {
+                const card = document.createElement('div');
+                card.className = 'rank-card';
+                card.innerHTML = `<div class="rank-num">${(i%10)+1}</div><img src="${m.img}">`;
+                track.appendChild(card);
+            });
+            const grid = document.getElementById('movieGrid');
+            movies.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'movie-item';
+                div.onclick = () => openModal(m);
+                div.innerHTML = `<img src="${m.img}"><div style="padding:15px; text-align:center;"><h3>${m.title}</h3><p style="color:var(--accent-red); font-size:0.75rem; margin-top:5px;">${m.genre}</p></div>`;
+                grid.appendChild(div);
+            });
+        }
+
+        function openModal(m) {
+            document.getElementById('modalTitle').innerText = m.title;
+            document.getElementById('modalGenre').innerText = m.genre.toUpperCase();
+            document.getElementById('modalDesc').innerText = m.desc;
+            document.getElementById('modalPoster').innerHTML = `<img src="${m.img}">`;
+            document.getElementById('movieModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('movieModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>
