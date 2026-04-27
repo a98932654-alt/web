@@ -3,233 +3,804 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FILM FESTIVAL 2026 | Cinematic Experience</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <title>2026 필름 페스티벌 | SEOUL INTERNATIONAL FILM FESTIVAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Serif+KR:wght@200;400;700&family=Noto+Sans+KR:wght@300;400;700&family=Share+Tech+Mono&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
+        /* ══════════════════════════════
+            VARIABLE & RESET
+        ══════════════════════════════ */
         :root {
-            --bg-black: #050505;
-            --accent-red: #E50914;
-            --text-white: #FFFFFF;
-            --text-gray: #A0A0A0;
-            --card-bg: #121212;
+            --red: #E8002D;
+            --black: #000;
+            --dark: #090909;
+            --d2: #0f0f0f;
+            --g1: #1e1e1e;
+            --g2: #2c2c2c;
+            --white: #F0EDE8;
+            --muted: rgba(240, 237, 232, 0.45);
+            
+            /* Intro Specifics */
+            --intro-bg: #050505;
+            --accent-red: #ff0000;
+            --neon-red: #ff3333;
             --serif: 'Playfair Display', serif;
-            --sans: 'Inter', sans-serif;
+            --neon-mid: 0 0 20px rgba(255, 0, 0, 0.5);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
-        body { background-color: var(--bg-black); color: var(--text-white); font-family: var(--sans); line-height: 1.6; }
-
-        /* Navigation */
-        header {
-            position: fixed; top: 0; width: 100%; padding: 20px 50px;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 1000; background: rgba(0,0,0,0.9); border-bottom: 1px solid #222;
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        html { scroll-behavior: smooth; }
+        body { 
+            background: var(--black); 
+            color: var(--white); 
+            font-family: 'Noto Serif KR', serif; 
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        .logo { font-family: var(--serif); font-size: 1.5rem; letter-spacing: 2px; cursor: pointer; }
-        nav ul { display: flex; gap: 30px; list-style: none; font-size: 0.8rem; letter-spacing: 1px; }
-        nav a:hover { color: var(--accent-red); }
+        body.no-scroll { overflow: hidden; height: 100vh; }
+        img { display: block; max-width: 100%; }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
+        a { text-decoration: none; color: inherit; }
+        li { list-style: none; }
 
-        /* Hero */
-        .hero {
-            height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), 
+        /* ══════════════════════════════
+            ZOOM INTRO SECTION
+        ══════════════════════════════ */
+        .zoom-wrapper { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
+            display: flex; justify-content: center; align-items: center; z-index: 5000; 
+            background: var(--intro-bg); transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
+        }
+        .intro-title-box { 
+            position: absolute; z-index: 5110; text-align: center; pointer-events: none; 
+            font-family: var(--serif); transition: 0.4s;
+        }
+        .intro-title-box h1 { 
+            font-size: clamp(3rem, 12vw, 8.5rem); font-weight: 800; font-style: italic; 
+            text-shadow: 0 0 20px var(--neon-red); color: #fff; line-height: 1;
+        }
+        .intro-title-box h1 span { color: var(--accent-red); }
+        .intro-title-box p { 
+            color: #777; letter-spacing: 0.8em; font-weight: 700; margin-top: 20px; 
+            font-family: 'Share Tech Mono'; font-size: 0.9rem; text-transform: uppercase;
+        }
+
+        .zoom-image-container {
+            width: 520px; height: 320px;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
                         url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=2070') no-repeat center/cover;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            border-radius: 4px; border: 1px solid var(--accent-red);
+            box-shadow: var(--neon-mid); 
+            will-change: transform; transition: transform 0.15s ease-out;
         }
-        .hero h1 { font-family: var(--serif); font-size: clamp(3rem, 8vw, 6rem); font-style: italic; }
 
-        /* Sections */
-        .section-container { padding: 100px 50px; max-width: 1400px; margin: auto; }
-        .section-title { font-family: var(--serif); font-size: 3rem; text-align: center; margin-bottom: 50px; position: relative; }
-        .section-title::after { content: ''; display: block; width: 60px; height: 3px; background: var(--accent-red); margin: 10px auto; }
-
-        /* Ranking Carousel (10 Items) */
-        .ranking-wrapper { overflow: hidden; padding: 20px 0; background: #080808; }
-        .carousel-track { display: flex; width: calc(250px * 20); animation: scroll 40s linear infinite; }
-        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-250px * 10)); } }
-        .rank-card { width: 230px; margin: 0 10px; position: relative; flex-shrink: 0; }
-        .rank-card img { width: 100%; height: 350px; object-fit: cover; border: 1px solid #222; }
-        .rank-num { position: absolute; bottom: -10px; left: -10px; font-family: var(--serif); font-size: 5rem; color: var(--accent-red); -webkit-text-stroke: 1px white; z-index: 10; }
-
-        /* Filter Tabs */
-        .filter-tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 40px; flex-wrap: wrap; }
-        .tab-btn { 
-            padding: 10px 25px; border: 1px solid #333; background: transparent; color: white; 
-            cursor: pointer; text-transform: uppercase; transition: 0.3s; font-size: 0.8rem;
+        .explore-btn {
+            position: absolute; top: 60%; z-index: 5130; 
+            background: rgba(255,0,0,0.1); color: var(--accent-red); 
+            border: 1px solid var(--accent-red);
+            font-weight: 900; font-size: 1.8rem; cursor: pointer; 
+            opacity: 0; transform: translateY(40px); 
+            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            text-transform: uppercase; letter-spacing: 12px; pointer-events: none;
+            font-family: 'Bebas Neue'; padding: 15px 40px;
         }
-        .tab-btn.active, .tab-btn:hover { background: var(--accent-red); border-color: var(--accent-red); }
+        .explore-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; animation: textNeonPulse 1.5s infinite alternate; }
+        .explore-btn:hover { background: var(--accent-red); color: #000; box-shadow: 0 0 30px var(--accent-red); }
 
-        /* Movie Grid */
-        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; }
-        .movie-item { background: var(--card-bg); cursor: pointer; transition: 0.3s; border-bottom: 0px solid var(--accent-red); }
-        .movie-item:hover { transform: translateY(-10px); border-bottom: 4px solid var(--accent-red); }
-        .movie-item img { width: 100%; height: 320px; object-fit: cover; }
-        .movie-item-info { padding: 15px; text-align: center; }
-        .movie-item-info h3 { font-size: 0.9rem; text-transform: uppercase; margin-bottom: 5px; }
-        .movie-item-info p { color: var(--accent-red); font-size: 0.8rem; font-weight: bold; }
+        @keyframes textNeonPulse {
+            from { text-shadow: 0 0 10px var(--accent-red); transform: scale(1); }
+            to { text-shadow: 0 0 25px var(--neon-red); transform: scale(1.05); }
+        }
 
-        /* Modal (Detail Page) */
-        .modal { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px;
+        /* ══════════════════════════════
+            HEADER
+        ══════════════════════════════ */
+        header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1.5rem 4rem; transition: 0.4s;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, transparent 100%);
         }
-        .modal-content { 
-            max-width: 900px; width: 100%; display: flex; gap: 40px; background: #111; padding: 40px; border: 1px solid #333; position: relative;
-        }
-        .modal-poster { width: 350px; flex-shrink: 0; }
-        .modal-poster img { width: 100%; border: 1px solid var(--accent-red); }
-        .modal-info h2 { font-family: var(--serif); font-size: 2.5rem; margin-bottom: 15px; }
-        .modal-info .genre-tag { color: var(--accent-red); font-weight: bold; margin-bottom: 20px; display: block; }
-        .modal-info p { color: var(--text-gray); margin-bottom: 30px; font-size: 1rem; }
-        .close-btn { position: absolute; top: 20px; right: 20px; font-size: 2rem; cursor: pointer; color: var(--accent-red); }
+        header.scrolled { padding: 1rem 4rem; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--g1); backdrop-filter: blur(10px); }
         
-        .btn-red { background: var(--accent-red); color: white; padding: 15px 40px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .logo { 
+            font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.25em; 
+            color: var(--white); cursor: pointer;
+        }
+        .logo em { color: var(--red); font-style: normal; }
 
-        footer { padding: 50px; text-align: center; border-top: 1px solid #222; color: #555; font-size: 0.8rem; }
+        nav { display: flex; align-items: center; gap: 3.5rem; }
+        nav a {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 0.3em;
+            color: var(--muted); transition: 0.3s; position: relative;
+        }
+        nav a::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px;
+            background: var(--red); transition: 0.3s;
+        }
+        nav a:hover { color: var(--white); }
+        nav a:hover::after { width: 100%; }
+
+        .login-btn {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em;
+            border: 1px solid var(--g2); color: var(--muted); padding: 0.5rem 1.2rem;
+            transition: 0.3s; border-radius: 2px;
+        }
+        .login-btn:hover { border-color: var(--white); color: var(--white); background: rgba(255,255,255,0.05); }
+
+        /* ══════════════════════════════
+            HERO SECTION
+        ══════════════════════════════ */
+        .hero { height: 100vh; position: relative; display: flex; align-items: flex-end; overflow: hidden; }
+        .hero-film { position: absolute; left: 0; right: 0; height: 45px; z-index: 10; background: #000; display: flex; align-items: center; gap: 8px; padding: 0 15px; }
+        .hero-film.top { top: 0; }
+        .hero-film.bot { bottom: 0; }
+        .hfh { min-width: 28px; height: 22px; border-radius: 3px; background: #080808; border: 1.5px solid #1e1e1e; flex-shrink:0; }
+        
+        .hero-bg {
+            position: absolute; inset: 0;
+            background: url('https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=1800&q=90') center/cover no-repeat;
+            filter: brightness(0.35) saturate(0.8); transition: 1.5s;
+        }
+        .hero:hover .hero-bg { transform: scale(1.05); }
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, var(--black) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+        }
+        
+        .hero-content { position: relative; z-index: 20; padding: 0 4rem 6rem; width: 100%; }
+        .hero-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.5em; color: var(--red); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .hero-tag::before { content: ''; width: 30px; height: 1px; background: var(--red); }
+        .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem, 10vw, 9.5rem); line-height: 0.85; letter-spacing: 0.02em; margin-bottom: 1rem; }
+        .hero-sub { font-family: 'Noto Serif KR', serif; font-weight: 200; font-size: 1rem; color: var(--muted); letter-spacing: 0.1em; line-height: 1.8; }
+
+        /* ══════════════════════════════
+            SECTION COMMON
+        ══════════════════════════════ */
+        section { padding: 8rem 4rem; position: relative; }
+        .sec-num { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.5em; color: var(--red); margin-bottom: 0.8rem; }
+        .sec-en { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem, 6vw, 5rem); letter-spacing: 0.05em; line-height: 1; margin-bottom: 0.5rem; }
+        .sec-ko { font-family: 'Noto Serif KR', serif; font-weight: 200; font-size: 0.9rem; letter-spacing: 0.2em; color: var(--red); margin-bottom: 3.5rem; }
+        .sec-rule { width: 50px; height: 1px; background: var(--red); margin-bottom: 4rem; }
+
+        /* ══════════════════════════════
+            SCHEDULE (CALENDAR)
+        ══════════════════════════════ */
+        #schedule { background: var(--dark); }
+        .cal-wrap { display: flex; gap: 5rem; align-items: flex-start; flex-wrap: wrap; }
+        
+        .cal-box { flex: 0 0 auto; background: #000; padding: 2rem; border: 1px solid var(--g1); border-radius: 4px; }
+        .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
+        .cal-month { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.1em; color: var(--white); }
+        .cal-nav { width: 32px; height: 32px; border: 1px solid var(--g2); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: 0.3s; }
+        .cal-nav:hover { border-color: var(--red); color: var(--red); }
+        
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 45px); gap: 5px; }
+        .cal-dname { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: #555; text-align: center; padding-bottom: 10px; }
+        .cal-cell { 
+            width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; 
+            font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #444; 
+            border-radius: 2px; transition: 0.2s; cursor: default;
+        }
+        .cal-cell.ev { color: var(--white); cursor: pointer; position: relative; }
+        .cal-cell.ev::after { content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px; background: var(--red); border-radius: 50%; }
+        .cal-cell.ev:hover { background: var(--g1); color: var(--red); }
+        .cal-cell.act { background: var(--red); color: #000; font-weight: bold; }
+        .cal-cell.act::after { background: #000; }
+        
+        .ev-panel { flex: 1; min-width: 320px; }
+        .ev-date { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--red); border-bottom: 1px solid var(--g1); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .ev-item { 
+            display: flex; align-items: center; gap: 2rem; padding: 1.2rem 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.03); transition: 0.3s;
+        }
+        .ev-item:hover { padding-left: 10px; background: rgba(255,255,255,0.01); }
+        .ev-time { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--red); width: 60px; }
+        .ev-info { flex: 1; }
+        .ev-title { font-family: 'Noto Serif KR', serif; font-size: 1rem; font-weight: 400; margin-bottom: 4px; }
+        .ev-meta { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--muted); }
+        .ev-book { 
+            font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; 
+            border: 1px solid rgba(232,0,45,0.4); color: var(--red); padding: 0.4rem 1rem;
+            transition: 0.3s;
+        }
+        .ev-book:hover { background: var(--red); color: #000; }
+
+        /* ══════════════════════════════
+            RANKING (AUTOPLAY CAROUSEL)
+        ══════════════════════════════ */
+        #ranking { background: var(--black); padding-left: 0; padding-right: 0; overflow: hidden; }
+        .ranking-head { padding: 0 4rem 4rem; }
+        
+        .reel-section { position: relative; width: 100%; }
+        .reel-film-strip { display: flex; align-items: center; gap: 6px; padding: 8px 15px; background: #080808; overflow: hidden; width: 100%; }
+        .reel-fhole { min-width: 36px; height: 24px; border-radius: 4px; background: #000; border: 1.5px solid #222; flex-shrink: 0; }
+        
+        .carousel-wrap { position: relative; padding: 5rem 0; display: flex; align-items: center; background: #050505; }
+        .carousel-track-outer { flex: 1; overflow: hidden; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
+        .carousel-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: slideLoop 55s linear infinite;
+}
+@keyframes slideLoop {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+        .c-card { 
+            flex-shrink: 0; width: 260px; padding: 0 15px; transition: 0.8s cubic-bezier(0.23, 1, 0.32, 1); 
+            cursor: pointer; position: relative; opacity: 0.3; transform: scale(0.8) rotateY(30deg);
+        }
+        .c-card:hover {
+    transform: scale(1.06);
+    transition: 0.4s;
+    z-index: 10;
+}
+        .c-card.center { opacity: 1; transform: scale(1.3) translateZ(50px) rotateY(0); z-index: 100; }
+        .c-card.side { opacity: 0.6; transform: scale(1) rotateY(0); z-index: 5; }
+
+        .c-poster { aspect-ratio: 2/3; overflow: hidden; position: relative; background: #111; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .c-poster img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.95); transition: 0.5s; }
+        .c-card.center img { filter: grayscale(0); }
+        .c-poster::after {
+            content: ''; position: absolute; inset: 0; 
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%);
+        }
+        .c-rank { 
+            position: absolute; top: 10px; right: 15px; z-index: 10;
+            font-family: 'Bebas Neue', sans-serif; font-size: 4rem; color: rgba(232,0,45,0.75);
+            line-height: 1;
+        }
+        .c-card.center .c-rank { color: var(--red); opacity: 0.8; }
+        
+        .c-info { padding: 1.5rem 0 0; text-align: center; opacity: 0; transition: 0.4s; }
+        .c-card.center .c-info { opacity: 1; }
+        .c-title { font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 1rem; margin-bottom: 5px; color: var(--white); }
+        .c-score { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--red); }
+
+        /* ══════════════════════════════
+            LINEUP (GRID)
+        ══════════════════════════════ */
+        #lineup { background: var(--dark); }
+        .filter-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 4rem; }
+        .f-btn { 
+            font-family: 'Noto Sans KR', sans-serif; font-size: 0.75rem; font-weight: 500;
+            border: 1px solid var(--g2); color: var(--muted); padding: 0.6rem 1.5rem; transition: 0.3s;
+        }
+        .f-btn.on, .f-btn:hover { border-color: var(--red); color: var(--red); }
+        
+        .lineup-reel { position: relative; }
+        .lineup-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
+            gap: 2rem; margin: 3rem 0;
+        }
+        .lineup-card { 
+            position: relative; overflow: hidden; cursor: pointer; aspect-ratio: 2/3;
+            background: #111; transition: 0.5s; border: 1px solid #1a1a1a;
+        }
+        .lineup-card img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6) grayscale(0.3); transition: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .lineup-card:hover img { filter: brightness(1) grayscale(0); transform: scale(1.1); }
+        
+        .lc-info { 
+            position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem 1.5rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            z-index: 10; transform: translateY(20px); transition: 0.4s;
+        }
+        .lineup-card:hover .lc-info { transform: translateY(0); }
+        .lc-genre { 
+            font-family: 'Share Tech Mono', monospace; font-size: 0.5rem; color: var(--red);
+            text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.2em;
+        }
+        .lc-title { font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 5px; }
+        .lc-meta { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--muted); }
+
+        /* ══════════════════════════════
+            MODALS & LOGIN
+        ══════════════════════════════ */
+        .overlay { 
+            position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,0.92); 
+            display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px);
+        }
+        .overlay.open { display: flex; }
+        
+        /* Login Modal UI */
+        .login-box { width: 400px; background: var(--d2); border: 1px solid var(--g2); padding: 3rem; text-align: center; }
+        .login-box h2 { font-family: 'Bebas Neue'; font-size: 2.5rem; color: var(--red); margin-bottom: 2rem; letter-spacing: 0.1em; }
+        .input-group { margin-bottom: 1.5rem; text-align: left; }
+        .input-group label { display: block; font-family: 'Share Tech Mono'; font-size: 0.6rem; color: #555; margin-bottom: 0.5rem; }
+        .input-group input { width: 100%; background: #000; border: 1px solid var(--g2); padding: 0.8rem; color: #fff; font-family: inherit; }
+        .input-group input:focus { border-color: var(--red); }
+
+        .bk-box { 
+            width: min(850px, 95vw); max-height: 90vh; background: var(--d2); 
+            border: 1px solid var(--g2); position: relative; overflow-y: auto;
+        }
+        .bk-hd { display: flex; gap: 2.5rem; padding: 3rem; border-bottom: 1px solid var(--g1); background: #0a0a0a; }
+        .bk-poster { width: 140px; aspect-ratio: 2/3; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .bk-poster img { width: 100%; height: 100%; object-fit: cover; }
+        .bk-meta h3 { font-family: 'Noto Serif KR', serif; font-size: 1.8rem; margin-bottom: 1rem; }
+        .bk-meta p { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; }
+        
+        .bk-body { padding: 3rem; }
+        .bk-step { display: none; }
+        .bk-step.on { display: block; animation: fadeIn 0.5s forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .seat-grid { 
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; 
+            max-width: 500px; margin: 3rem auto; perspective: 1000px;
+        }
+        .seat { 
+            aspect-ratio: 1; background: var(--g1); border: 1px solid #333; 
+            border-radius: 4px 4px 0 0; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; font-family: 'Share Tech Mono'; font-size: 0.6rem; color: #444;
+        }
+        .seat:hover { border-color: var(--red); color: var(--red); }
+        .seat.sel { background: var(--red); border-color: var(--red); color: #000; box-shadow: 0 0 15px var(--red); }
+        .seat.taken { opacity: 0.2; cursor: not-allowed; background: #050505; }
+
+        .screen-bar { 
+            width: 80%; height: 4px; background: #444; margin: 0 auto 4rem; 
+            border-radius: 50%; box-shadow: 0 10px 20px rgba(255,255,255,0.1); 
+        }
+
+        .pay-btn {
+            width: 100%; padding: 1.2rem; background: var(--red); border: none; 
+            color: #fff; font-family: 'Share Tech Mono'; font-size: 1rem; 
+            letter-spacing: 0.3em; margin-top: 2rem; transition: 0.3s;
+        }
+        .pay-btn:disabled { background: var(--g2); color: #555; cursor: not-allowed; }
+        .pay-btn:hover:not(:disabled) { background: #ff1a43; box-shadow: 0 0 30px rgba(232,0,45,0.4); }
+
+        /* ══════════════════════════════
+            FOOTER
+        ══════════════════════════════ */
+        footer { 
+            padding: 5rem 4rem; border-top: 1px solid var(--g1); 
+            display: flex; justify-content: space-between; align-items: center;
+            background: #000;
+        }
+        .foot-logo { font-family: 'Bebas Neue'; font-size: 1.2rem; opacity: 0.3; }
+        .foot-info { font-family: 'Share Tech Mono'; font-size: 0.6rem; color: #444; letter-spacing: 0.1em; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--red); }
+    html, body {
+    height: 100%;
+}
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo" onclick="window.scrollTo(0,0)">FILM <span class="red-text">FESTIVAL</span></div>
-        <nav>
-            <ul>
-                <li><a href="#schedule">SCHEDULE</a></li>
-                <li><a href="#ranking">TOP RANKING</a></li>
-                <li><a href="#now-showing">NOW SHOWING</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <section class="hero">
-        <p class="red-text">EST. 2026</p>
-        <h1>UNFOLD THE <span class="red-text">STORY</span></h1>
-    </section>
-
-    <section id="schedule" class="section-container">
-        <h2 class="section-title">FESTIVAL SCHEDULE</h2>
-        <div style="display: flex; justify-content: space-between; border: 1px solid #333; text-align: center;">
-            <div style="flex:1; padding: 30px; border-right: 1px solid #333;"><p class="red-text">APR 12</p><h4>Opening Night</h4></div>
-            <div style="flex:1; padding: 30px; border-right: 1px solid #333;"><p class="red-text">APR 13</p><h4>Director's Talk</h4></div>
-            <div style="flex:1; padding: 30px; border-right: 1px solid #333;"><p class="red-text">APR 14</p><h4>Midnight Screening</h4></div>
-            <div style="flex:1; padding: 30px;"><p class="red-text">APR 15</p><h4>Award Ceremony</h4></div>
+    <div class="zoom-wrapper" id="zoomWrapper">
+        <div class="intro-title-box" id="introTitle">
+            <h1>FILM <span>FESTIVAL</span></h1>
+            <p>2026 Premiere Showcase · Seoul</p>
         </div>
-    </section>
+        <div class="zoom-image-container" id="zoomImg"></div>
+        <button class="explore-btn" id="exploreBtn" onclick="startFestival()">Explore Festival</button>
+    </div>
 
-    <section id="ranking" class="ranking-wrapper">
-        <h2 class="section-title">RECENT RANKING TOP 10</h2>
-        <div class="carousel-track" id="rankingTrack">
-            </div>
-    </section>
-
-    <section id="now-showing" class="section-container">
-        <h2 class="section-title">NOW SHOWING</h2>
+    <div id="site" style="opacity:0; pointer-events:none; visibility:hidden;">
         
-        <div class="filter-tabs">
-            <button class="tab-btn active" onclick="filterMovies('All')">All</button>
-            <button class="tab-btn" onclick="filterMovies('Action')">Action</button>
-            <button class="tab-btn" onclick="filterMovies('Romance')">Romance</button>
-            <button class="tab-btn" onclick="filterMovies('Thriller')">Thriller</button>
-            <button class="tab-btn" onclick="filterMovies('Horror')">Horror</button>
-            <button class="tab-btn" onclick="filterMovies('Drama')">Drama</button>
+        <header id="mainHeader">
+            <div class="logo" onclick="location.reload()">FILM<em>FEST</em> '26</div>
+            <nav>
+                <a href="#schedule">SCHEDULE</a>
+                <a href="#ranking">RANKING</a>
+                <a href="#lineup">LINEUP</a>
+                <button class="login-btn" onclick="openM('loginM')">SIGN IN</button>
+            </nav>
+        </header>
+
+        <div class="hero">
+            <div class="hero-bg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-film top" id="hFilmTop"></div>
+            <div class="hero-film bot" id="hFilmBot"></div>
+            <div class="hero-content">
+                <div class="hero-tag">Opening Film · Now Premiering</div>
+                <h1 class="hero-title">INTO THE<br>DARKNESS</h1>
+                <div class="hero-sub">Directed by Junho Kim · 127 mins · Grand Cinema Hall 1</div>
+            </div>
         </div>
 
-        <div class="movie-grid" id="movieGrid">
+        <section id="schedule">
+            <div class="sec-num">01</div>
+            <div class="sec-en">FESTIVAL SCHEDULE</div>
+            <div class="sec-ko">영화제 일정 및 예매</div>
+            <div class="sec-rule"></div>
+            
+            <div class="cal-wrap">
+                <div class="cal-box">
+                    <div class="cal-head">
+                        <button class="cal-nav" onclick="calMove(-1)">←</button>
+                        <div class="cal-month" id="calMonth">OCTOBER 2026</div>
+                        <button class="cal-nav" onclick="calMove(1)">→</button>
+                    </div>
+                    <div class="cal-grid" id="calGrid"></div>
+                </div>
+                <div class="ev-panel">
+                    <div class="ev-date" id="evDate">OCT 07</div>
+                    <div id="evList"></div>
+                </div>
             </div>
-    </section>
+        </section>
 
-    <div class="modal" id="movieModal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <div class="modal-poster" id="modalPoster"></div>
-            <div class="modal-info">
-                <h2 id="modalTitle">Movie Title</h2>
-                <span class="genre-tag" id="modalGenre">Genre</span>
-                <p id="modalDesc">Synopsis goes here...</p>
-                <button class="btn-red">Book Now</button>
+        <section id="ranking">
+            <div class="ranking-head">
+                <div class="sec-num">02</div>
+                <div class="sec-en">REAL-TIME RANKING</div>
+                <div class="sec-ko">관객들이 주목하는 실시간 순위</div>
+            </div>
+            <div class="reel-section">
+                <div class="reel-film-strip" id="rfTop"></div>
+                <div class="carousel-wrap" onmouseenter="stopAuto()" onmouseleave="startAuto()">
+                    <div class="carousel-track-outer">
+                        <div class="carousel-track" id="carTrack"></div>
+                    </div>
+                </div>
+                <div class="carousel-info" id="carInfo" style="text-align:center; padding:2rem; font-family:'Share Tech Mono';"></div>
+                <div class="reel-film-strip" id="rfBot"></div>
+            </div>
+       <section id="lineup">
+    <div class="sec-num">03</div>
+    <div class="sec-en">FILM LINEUP</div>
+    <div class="sec-ko">상영작 리스트</div>
+    <div class="sec-rule"></div>
+
+    <div class="filter-row" id="filterRow"></div>
+
+    <div class="lineup-reel">
+        <div class="reel-film-strip" id="lfTop"></div>
+        <div class="lineup-grid" id="lineupGrid"></div>
+        <div class="reel-film-strip" id="lfBot"></div>
+    </div>
+</section>
+            <div class="filter-row" id="filterRow"></div>
+            
+            <div class="lineup-reel">
+                <div class="reel-film-strip" style="padding:5px 15px;" id="lfTop"></div>
+                <div class="lineup-grid" id="lineupGrid"></div>
+                <div class="reel-film-strip" style="padding:5px 15px;" id="lfBot"></div>
+            </div>
+        </section>
+        <footer>
+            <div class="foot-logo">FILM<em>FEST</em> 2026</div>
+            <div class="foot-info">© 2026 SEOUL INTERNATIONAL FILM FESTIVAL. ALL RIGHTS RESERVED.</div>
+        </footer>
+    </div>
+
+    <div class="overlay" id="loginM">
+        <div class="login-box">
+            <button onclick="closeM('loginM')" style="float:right; color:#666;">✕</button>
+            <h2>SIGN IN</h2>
+            <div class="input-group">
+                <label>IDENTIFICATION / EMAIL</label>
+                <input type="text" placeholder="ID를 입력하세요">
+            </div>
+            <div class="input-group">
+                <label>ACCESS KEY / PASSWORD</label>
+                <input type="password" placeholder="비밀번호를 입력하세요">
+            </div>
+            <button class="pay-btn" onclick="alert('로그인 서비스 점검 중입니다.'); closeM('loginM');">CONTINUE</button>
+        </div>
+    </div>
+
+   <div class="overlay" id="bkM">
+    <div class="bk-box" style="position:relative;">
+
+        <button id="bkBackBtn"
+        onclick="bkBack()"
+        style="position:absolute; top:20px; left:20px; z-index:9999; font-size:1.5rem; color:#666; display:none;">
+        ←
+        </button>
+
+        <button onclick="closeM('bkM')"
+        style="position:absolute; top:20px; right:20px; z-index:9999; font-size:1.5rem; color:#666;">
+        ✕
+        </button>
+
+        <div class="bk-step on" id="bkStep1">
+            <div class="bk-body" style="padding:4rem; text-align:center;">
+                <h2>예매 안내</h2>
+                <p style="margin:2rem 0;">좌석을 선택해주세요.</p>
+                <button class="pay-btn" onclick="bkGo(2)">SELECT SEATS</button>
+            </div>
+        </div>
+                    <div style="font-family:'Share Tech Mono'; color:var(--red); margin-bottom:1rem;">[NOTICE]</div>
+                    <p style="font-size:0.85rem; color:#888; line-height:1.6; margin-bottom:2.5rem;">
+                        본 상영 회차는 감독과의 대화(GV)가 예정되어 있습니다. 상영 종료 후 약 30분간 진행됩니다.
+                    </p>
+                    <button class="pay-btn" onclick="bkGo(2)">SELECT SEATS</button>
+                </div>
+            </div>
+            <div class="bk-step" id="bkStep2">
+                <div class="bk-body">
+                    <div class="screen-bar"></div>
+                    <div style="text-align:center; font-family:'Share Tech Mono'; font-size:0.6rem; color:#444; margin-bottom:2rem; letter-spacing:0.5em;">SCREEN</div>
+                    <div class="seat-grid" id="seatGrid"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:3rem; padding-top:2rem; border-top:1px solid #222;">
+                        <div style="font-family:'Share Tech Mono';">
+                            <span style="color:#555; font-size:0.7rem;">SELECTED SEATS</span>
+                            <div id="selSeatsDisplay" style="font-size:1.2rem; color:var(--red); margin-top:5px;">NONE</div>
+                        </div>
+                        <button class="pay-btn" id="payBtn" disabled onclick="bkGo(3)" style="width:200px; margin-top:0;">PAY NOW</button>
+                    </div>
+                </div>
+            </div>
+            <div class="bk-step" id="bkStep3">
+                <div class="bk-body" style="text-align:center; padding:5rem 0;">
+                    <div style="width:80px; height:80px; border-radius:50%; border:2px solid var(--red); display:flex; align-items:center; justify-content:center; margin:0 auto 2rem; color:var(--red); font-size:2rem;">✓</div>
+                    <h2 style="font-family:'Bebas Neue'; font-size:2.5rem; letter-spacing:0.1em;">BOOKING COMPLETE</h2>
+                    <p style="font-family:'Share Tech Mono'; color:#666; margin-top:1rem;">Your ticket has been sent to your registered email.</p>
+                    <div id="succCode" style="margin-top:2.5rem; font-family:'Share Tech Mono'; background:#000; padding:1.5rem; color:var(--red); font-size:1.2rem; letter-spacing:0.2em;"></div>
+                    <button class="pay-btn" onclick="closeM('bkM')" style="width:200px; margin-top:3rem;">CLOSE</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2026 FILM FESTIVAL BY GEMINI. MODERN CINEMATIC UI.</p>
-    </footer>
-
     <script>
-        // 영화 데이터 (총 15개)
-        const movies = [
-            { id: 1, title: "The Last Horizon", genre: "Action", img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400", desc: "인류의 마지막 희망을 건 우주 함선의 사투를 그린 초대형 액션 블록버스터." },
-            { id: 2, title: "Midnight Seoul", genre: "Romance", img: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=400", desc: "잠들지 않는 도시 서울, 그 속에서 피어나는 두 남녀의 우연한 사랑 이야기." },
-            { id: 3, title: "Shadow Play", genre: "Thriller", img: "https://images.unsplash.com/photo-1594908900066-3f47337549d8?q=80&w=400", desc: "그림자 속에 숨어있는 살인마와 그를 쫓는 형사의 숨막히는 심리전." },
-            { id: 4, title: "Forgotten", genre: "Horror", img: "https://images.unsplash.com/photo-1509248961158-e54f6934749c?q=80&w=400", desc: "버려진 폐교에서 들려오는 의문의 목소리, 절대 뒤를 돌아보지 마세요." },
-            { id: 5, title: "Life of Piety", genre: "Drama", img: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400", desc: "평범한 삶 속에 숨겨진 고귀한 가치를 찾아 떠나는 감동적인 여정." },
-            { id: 6, title: "Cyber Chase", genre: "Action", img: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=400", desc: "가상 현실 속에서 벌어지는 해커들의 치열한 데이터 쟁탈전." },
-            { id: 7, title: "Silent Echo", genre: "Thriller", img: "https://images.unsplash.com/photo-1616530940355-351fabd9524b?q=80&w=400", desc: "아무도 믿을 수 없는 고립된 섬, 침묵만이 유일한 목격자입니다." },
-            { id: 8, title: "Red Velvet", genre: "Romance", img: "https://images.unsplash.com/photo-1517604401831-29197055748c?q=80&w=400", desc: "클래식한 분위기 속에 펼쳐지는 치명적이고 아름다운 유혹." },
-            { id: 9, title: "The Woods", genre: "Horror", img: "https://images.unsplash.com/photo-1505635330303-d3f146aa1a60?q=80&w=400", desc: "안개 자욱한 숲속, 그곳에 발을 들인 자는 아무도 돌아오지 못했다." },
-            { id: 10, title: "Father's Song", genre: "Drama", img: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=400", desc: "시간이 흘러도 변하지 않는 아버지의 사랑을 담은 따뜻한 음악 영화." },
-            { id: 11, title: "Iron Fist", genre: "Action", img: "https://images.unsplash.com/photo-1559583109-3e7968136c99?q=80&w=400", desc: "정의를 위해 주먹을 든 남자의 거친 리얼 액션." },
-            { id: 12, title: "Blue Moon", genre: "Romance", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400", desc: "달빛 아래서만 만날 수 있는 신비로운 두 연인의 판타지 로맨스." },
-            { id: 13, title: "Code Red", genre: "Thriller", img: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=400", desc: "국가 기밀을 탈취하려는 테러리스트와 저지하려는 특수요원의 24시간." },
-            { id: 14, title: "Ghost Ship", genre: "Horror", img: "https://images.unsplash.com/photo-1500076656116-558758c991c1?q=80&w=400", desc: "망망대해 위 떠도는 유령선, 그 안에 감춰진 끔찍한 진실." },
-            { id: 15, title: "City Lights", genre: "Drama", img: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=400", desc: "화려한 도시의 불빛 뒤에 가려진 소외된 이들의 희망 노래." }
+    
+        /* ══════════════════════════════
+            DATABASE
+        ══════════════════════════════ */
+        const FILMS = [
+            {id:1, title:'어둠 속으로 (Into the Darkness)', dir:'김준호', genre:'스릴러', date:'10월 07일', time:'19:00', venue:'그랜드 1관', runtime:'127분', score:'9.2', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600&q=80'},
+            {id:2, title:'빛의 회랑 (Corridor of Light)', dir:'마리 블랑', genre:'드라마', date:'10월 08일', time:'15:30', venue:'스튜디오 A', runtime:'110분', score:'9.7', stars:'★★★★★', img:'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=600&q=80'},
+            {id:3, title:'되감기 (Rewind)', dir:'박수연', genre:'애니메이션', date:'10월 09일', time:'13:00', venue:'스튜디오 B', runtime:'98분', score:'8.9', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=600&q=80'},
+            {id:4, title:'목격자 (The Witness)', dir:'알렌 코바치', genre:'다큐멘터리', date:'10월 10일', time:'18:00', venue:'홀 3', runtime:'89분', score:'8.7', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=600&q=80'},
+            {id:5, title:'하얀 밤 (White Night)', dir:'이지영', genre:'드라마', date:'10월 11일', time:'20:30', venue:'그랜드 2관', runtime:'134분', score:'7.8', stars:'★★★☆☆', img:'https://images.unsplash.com/photo-1525373698358-041e3a460346?w=600&q=80'},
+            {id:6, title:'메아리 (Echo)', dir:'타나카 류', genre:'스릴러', date:'10월 12일', time:'16:00', venue:'스튜디오 A', runtime:'112분', score:'8.4', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=600&q=80'},
+            {id:7, title:'숨겨진 꽃 (Hidden Flower)', dir:'사라 첸', genre:'드라마', date:'10월 13일', time:'14:00', venue:'홀 1', runtime:'105분', score:'9.5', stars:'★★★★★', img:'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&q=80'},
+            {id:8, title:'유리 도시 (Glass City)', dir:'오마르 하산', genre:'애니메이션', date:'10월 14일', time:'17:30', venue:'스튜디오 B', runtime:'93분', score:'8.6', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80'},
         ];
 
-        // 1. 랭킹 데이터 삽입 (Top 10)
-        const rankingTrack = document.getElementById('rankingTrack');
-        const rankingList = [...movies.slice(0, 10), ...movies.slice(0, 10)]; // 무한 루프를 위해 복제
-        rankingList.forEach((m, index) => {
-            const card = document.createElement('div');
-            card.className = 'rank-card';
-            card.innerHTML = `<div class="rank-num">${(index % 10) + 1}</div><img src="${m.img}" alt="${m.title}">`;
-            rankingTrack.appendChild(card);
-        });
+        const CAL_EVENTS = {
+            7: [{time:'19:00', venue:'그랜드 1관', title:'어둠 속으로', id:1}],
+            8: [{time:'15:30', venue:'스튜디오 A', title:'빛의 회랑', id:2}],
+            9: [{time:'13:00', venue:'스튜디오 B', title:'되감기', id:3}],
+            10: [{time:'18:00', venue:'홀 3', title:'목격자', id:4}],
+            11: [{time:'20:30', venue:'그랜드 2관', title:'하얀 밤', id:5}],
+            12: [{time:'16:00', venue:'스튜디오 A', title:'메아리', id:6}],
+            13: [{time:'14:00', venue:'홀 1', title:'숨겨진 꽃', id:7}],
+            14: [{time:'17:30', venue:'스튜디오 B', title:'유리 도시', id:8}]
+        };
 
-        // 2. 상영작 그리드 삽입 및 필터링
-        const movieGrid = document.getElementById('movieGrid');
-        function displayMovies(filtered) {
-            movieGrid.innerHTML = '';
-            filtered.forEach(m => {
-                const item = document.createElement('div');
-                item.className = 'movie-item';
-                item.onclick = () => openModal(m);
-                item.innerHTML = `
-                    <img src="${m.img}" alt="${m.title}">
-                    <div class="movie-item-info">
-                        <h3>${m.title}</h3>
-                        <p>${m.genre}</p>
+        /* ══════════════════════════════
+            INTRO & NAVIGATION LOGIC
+        ══════════════════════════════ */
+        let zoomVal = 1;
+        const zoomImg = document.getElementById('zoomImg');
+        const introTitle = document.getElementById('introTitle');
+        const exploreBtn = document.getElementById('exploreBtn');
+
+       window.addEventListener('wheel', (e) => {
+    zoomVal += e.deltaY * 0.008;
+    zoomVal = Math.min(Math.max(1, zoomVal), 15);
+
+    zoomImg.style.transform = `scale(${zoomVal})`;
+    introTitle.style.opacity = 1 - (zoomVal - 1) / 4;
+    introTitle.style.transform = `translateY(${(zoomVal - 1) * -20}px)`;
+
+    if (zoomVal >= 9) exploreBtn.classList.add('visible');
+    else exploreBtn.classList.remove('visible');
+}, { passive: false });
+
+        /* ══════════════════════════════
+            CORE FUNCTIONS
+        ══════════════════════════════ */
+        function initSite() {
+            ['hFilmTop','hFilmBot','rfTop','rfBot','lfTop','lfBot'].forEach(id => fillHoles(id, 50));
+            buildCal();
+            selectDay(7);
+            buildCarousel();
+            buildFilters();
+            buildLineup('전체');
+            startAuto(); // Start ranking autoplay
+        }
+
+        function fillHoles(id, count) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerHTML = Array(count).fill('<div class="hfh"></div>').join('');
+        }
+
+        function buildCal() {
+            const grid = document.getElementById('calGrid');
+            grid.innerHTML = '';
+            ["S","M","T","W","T","F","S"].forEach(d => grid.innerHTML += `<div class="cal-dname">${d}</div>`);
+            const daysInOct = 31;
+            const startOffset = 4;
+            for(let i=0; i<startOffset; i++) grid.innerHTML += `<div class="cal-cell empty"></div>`;
+            for(let d=1; d<=daysInOct; d++) {
+                const isEvent = CAL_EVENTS[d];
+                const active = d === selDay ? 'act' : '';
+                grid.innerHTML += `<div class="cal-cell ${isEvent?'ev':''} ${active}" onclick="${isEvent?`selectDay(${d})`:'' }">${d}</div>`;
+            }
+        }
+
+        let selDay = 7;
+        function selectDay(d) {
+            selDay = d;
+            buildCal();
+            const list = document.getElementById('evList');
+            document.getElementById('evDate').textContent = `OCT ${String(d).padStart(2,'0')}`;
+            const events = CAL_EVENTS[d] || [];
+            list.innerHTML = events.length ? events.map(ev => `
+                <div class="ev-item">
+                    <div class="ev-time">${ev.time}</div>
+                    <div class="ev-info">
+                        <div class="ev-title">${ev.title}</div>
+                        <div class="ev-meta">${ev.venue} · Dolby 7.1</div>
                     </div>
-                `;
-                movieGrid.appendChild(item);
-            });
+                    <button class="ev-book" onclick="openBk(${ev.id})">BOOK</button>
+                </div>
+            `).join('') : `<p style="color:#333; font-size:0.8rem; margin-top:20px;">No screenings scheduled for this date.</p>`;
         }
 
-        function filterMovies(genre) {
-            const btns = document.querySelectorAll('.tab-btn');
-            btns.forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+        // Ranking Carousel (Autoplay)
+        const ranked = [...FILMS].sort((a,b) => b.score - a.score);
 
-            if(genre === 'All') displayMovies(movies);
-            else displayMovies(movies.filter(m => m.genre === genre));
+function buildCarousel() {
+    const track = document.getElementById('carTrack');
+
+    const cards = ranked.map((f, i) => `
+        <div class="c-card" onclick="openBk(${f.id})">
+            <div class="c-rank">${i+1}</div>
+            <div class="c-poster"><img src="${f.img}"></div>
+            <div class="c-info" style="opacity:1;">
+                <div class="c-title">${f.title}</div>
+                <div class="c-score">${f.stars} ${f.score}</div>
+            </div>
+        </div>
+    `).join('');
+
+    track.innerHTML = cards + cards; // 두 번 복제해서 무한루프처럼
+}
+
+        function openM(id) {
+            document.getElementById(id).classList.add('open');
+            document.body.classList.remove('no-scroll');
         }
 
-        // 3. 모달 제어
-        function openModal(movie) {
-            document.getElementById('modalTitle').innerText = movie.title;
-            document.getElementById('modalGenre').innerText = movie.genre;
-            document.getElementById('modalDesc').innerText = movie.desc;
-            document.getElementById('modalPoster').innerHTML = `<img src="${movie.img}">`;
-            document.getElementById('movieModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+        function closeM(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.classList.remove('no-scroll');
+}
+
+        let selectedSeats = [];
+        function openBk(id) {
+            const f = FILMS.find(x => x.id === id);
+            document.getElementById('bkImg').src = f.img;
+            document.getElementById('bkTitle').textContent = f.title;
+            document.getElementById('bkDateMeta').textContent = `${f.date} · ${f.time}`;
+            selectedSeats = [];
+            document.getElementById('selSeatsDisplay').textContent = "NONE";
+            document.getElementById('payBtn').disabled = true;
+            buildSeats();
+            bkGo(1);
+            openM('bkM');
         }
 
-        function closeModal() {
-            document.getElementById('movieModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
+        function buildSeats() {
+            const grid = document.getElementById('seatGrid');
+            grid.innerHTML = '';
+            for(let i=1; i<=60; i++) {
+                const isTaken = Math.random() < 0.2;
+                grid.innerHTML += `<div class="seat ${isTaken?'taken':''}" onclick="toggleSeat(this, ${i})">${i}</div>`;
+            }
         }
 
-        // 초기 실행
-        displayMovies(movies);
-    </script>
+        function toggleSeat(el, num) {
+            if(el.classList.contains('taken')) return;
+            el.classList.toggle('sel');
+            if(el.classList.contains('sel')) selectedSeats.push(num);
+            else selectedSeats = selectedSeats.filter(s => s !== num);
+            document.getElementById('selSeatsDisplay').textContent = selectedSeats.length ? selectedSeats.sort((a,b)=>a-b).join(', ') : "NONE";
+            document.getElementById('payBtn').disabled = selectedSeats.length === 0;
+        }
+
+        function bkGo(n) {
+            document.querySelectorAll('.bk-step').forEach((s, i) => s.classList.toggle('on', i === n-1));
+            if(n === 3) {
+                const code = 'SIFF26-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                document.getElementById('succCode').textContent = code;
+            }
+        }
+   const GENRES = ['전체','드라마','스릴러','애니메이션','액션'];
+
+function buildFilters(){
+    const row = document.getElementById('filterRow');
+
+    row.innerHTML = GENRES.map(g => `
+        <button class="f-btn ${g==='전체' ? 'on' : ''}" 
+        onclick="filterLineup('${g}',this)">
+        ${g}
+        </button>
+    `).join('');
+}
+
+function filterLineup(genre,btn){
+    document.querySelectorAll('.f-btn').forEach(b=>{
+        b.classList.remove('on');
+    });
+
+    btn.classList.add('on');
+    buildLineup(genre);
+}
+
+function buildLineup(genre='전체'){
+    const grid = document.getElementById('lineupGrid');
+
+    const list = genre === '전체'
+        ? FILMS
+        : FILMS.filter(f => f.genre === genre);
+
+    grid.innerHTML = list.map(f => `
+        <div class="lineup-card" onclick="openBk(${f.id})">
+            <img src="${f.img}">
+            <div class="lc-info">
+                <div class="lc-genre">${f.genre}</div>
+                <div class="lc-title">${f.title}</div>
+                <div class="lc-meta">${f.date} · ${f.time}</div>
+            </div>
+        </div>
+    `).join('');
+
+    fillHoles('lfTop',50);
+    fillHoles('lfBot',50);
+}
+
+buildFilters();
+buildLineup();
+document.body.classList.remove('no-scroll');
+  window.onload = function(){
+    document.body.classList.remove('no-scroll');
+};
+function startFestival() {
+    const zoom = document.getElementById('zoomWrapper');
+    const site = document.getElementById('site');
+
+    zoom.style.opacity = '0';
+    zoom.style.visibility = 'hidden';
+    zoom.style.pointerEvents = 'none';
+
+    site.style.opacity = '1';
+    site.style.visibility = 'visible';
+    site.style.pointerEvents = 'auto';
+
+    initSite();
+    document.body.classList.remove('no-scroll');
+}
+ function forceUnlockScroll(){
+    document.body.classList.remove('no-scroll');
+    document.documentElement.style.overflow = 'auto';
+    document.body.style.overflow = 'auto';
+    document.body.style.height = 'auto';
+}
+
+forceUnlockScroll();
+function startFestival() {
+    const zoom = document.getElementById('zoomWrapper');
+    const site = document.getElementById('site');
+
+    zoom.style.opacity = '0';
+    zoom.style.visibility = 'hidden';
+
+    site.style.opacity = '1';
+    site.style.visibility = 'visible';
+    site.style.pointerEvents = 'auto';
+
+    document.body.classList.remove('no-scroll');
+    initSite();
+}
+ </script>
 </body>
 </html>
