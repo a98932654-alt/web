@@ -1,806 +1,1189 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 필름 페스티벌 | SEOUL INTERNATIONAL FILM FESTIVAL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Serif+KR:wght@200;400;700&family=Noto+Sans+KR:wght@300;400;700&family=Share+Tech+Mono&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-    <style>
-        /* ══════════════════════════════
-            VARIABLE & RESET
-        ══════════════════════════════ */
-        :root {
-            --red: #E8002D;
-            --black: #000;
-            --dark: #090909;
-            --d2: #0f0f0f;
-            --g1: #1e1e1e;
-            --g2: #2c2c2c;
-            --white: #F0EDE8;
-            --muted: rgba(240, 237, 232, 0.45);
-            
-            /* Intro Specifics */
-            --intro-bg: #050505;
-            --accent-red: #ff0000;
-            --neon-red: #ff3333;
-            --serif: 'Playfair Display', serif;
-            --neon-mid: 0 0 20px rgba(255, 0, 0, 0.5);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        html { scroll-behavior: smooth; }
-        body { 
-            background: var(--black); 
-            color: var(--white); 
-            font-family: 'Noto Serif KR', serif; 
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-        body.no-scroll { overflow: hidden; height: 100vh; }
-        img { display: block; max-width: 100%; }
-        button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
-        a { text-decoration: none; color: inherit; }
-        li { list-style: none; }
-
-        /* ══════════════════════════════
-            ZOOM INTRO SECTION
-        ══════════════════════════════ */
-        .zoom-wrapper { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
-            display: flex; justify-content: center; align-items: center; z-index: 5000; 
-            background: var(--intro-bg); transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
-        }
-        .intro-title-box { 
-            position: absolute; z-index: 5110; text-align: center; pointer-events: none; 
-            font-family: var(--serif); transition: 0.4s;
-        }
-        .intro-title-box h1 { 
-            font-size: clamp(3rem, 12vw, 8.5rem); font-weight: 800; font-style: italic; 
-            text-shadow: 0 0 20px var(--neon-red); color: #fff; line-height: 1;
-        }
-        .intro-title-box h1 span { color: var(--accent-red); }
-        .intro-title-box p { 
-            color: #777; letter-spacing: 0.8em; font-weight: 700; margin-top: 20px; 
-            font-family: 'Share Tech Mono'; font-size: 0.9rem; text-transform: uppercase;
-        }
-
-        .zoom-image-container {
-            width: 520px; height: 320px;
-            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
-                        url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=2070') no-repeat center/cover;
-            border-radius: 4px; border: 1px solid var(--accent-red);
-            box-shadow: var(--neon-mid); 
-            will-change: transform; transition: transform 0.15s ease-out;
-        }
-
-        .explore-btn {
-            position: absolute; top: 60%; z-index: 5130; 
-            background: rgba(255,0,0,0.1); color: var(--accent-red); 
-            border: 1px solid var(--accent-red);
-            font-weight: 900; font-size: 1.8rem; cursor: pointer; 
-            opacity: 0; transform: translateY(40px); 
-            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            text-transform: uppercase; letter-spacing: 12px; pointer-events: none;
-            font-family: 'Bebas Neue'; padding: 15px 40px;
-        }
-        .explore-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; animation: textNeonPulse 1.5s infinite alternate; }
-        .explore-btn:hover { background: var(--accent-red); color: #000; box-shadow: 0 0 30px var(--accent-red); }
-
-        @keyframes textNeonPulse {
-            from { text-shadow: 0 0 10px var(--accent-red); transform: scale(1); }
-            to { text-shadow: 0 0 25px var(--neon-red); transform: scale(1.05); }
-        }
-
-        /* ══════════════════════════════
-            HEADER
-        ══════════════════════════════ */
-        header {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 1.5rem 4rem; transition: 0.4s;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, transparent 100%);
-        }
-        header.scrolled { padding: 1rem 4rem; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--g1); backdrop-filter: blur(10px); }
-        
-        .logo { 
-            font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.25em; 
-            color: var(--white); cursor: pointer;
-        }
-        .logo em { color: var(--red); font-style: normal; }
-
-        nav { display: flex; align-items: center; gap: 3.5rem; }
-        nav a {
-            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 0.3em;
-            color: var(--muted); transition: 0.3s; position: relative;
-        }
-        nav a::after {
-            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px;
-            background: var(--red); transition: 0.3s;
-        }
-        nav a:hover { color: var(--white); }
-        nav a:hover::after { width: 100%; }
-
-        .login-btn {
-            font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em;
-            border: 1px solid var(--g2); color: var(--muted); padding: 0.5rem 1.2rem;
-            transition: 0.3s; border-radius: 2px;
-        }
-        .login-btn:hover { border-color: var(--white); color: var(--white); background: rgba(255,255,255,0.05); }
-
-        /* ══════════════════════════════
-            HERO SECTION
-        ══════════════════════════════ */
-        .hero { height: 100vh; position: relative; display: flex; align-items: flex-end; overflow: hidden; }
-        .hero-film { position: absolute; left: 0; right: 0; height: 45px; z-index: 10; background: #000; display: flex; align-items: center; gap: 8px; padding: 0 15px; }
-        .hero-film.top { top: 0; }
-        .hero-film.bot { bottom: 0; }
-        .hfh { min-width: 28px; height: 22px; border-radius: 3px; background: #080808; border: 1.5px solid #1e1e1e; flex-shrink:0; }
-        
-        .hero-bg {
-            position: absolute; inset: 0;
-            background: url('https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=1800&q=90') center/cover no-repeat;
-            filter: brightness(0.35) saturate(0.8); transition: 1.5s;
-        }
-        .hero:hover .hero-bg { transform: scale(1.05); }
-        .hero-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(to top, var(--black) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
-        }
-        
-        .hero-content { position: relative; z-index: 20; padding: 0 4rem 6rem; width: 100%; }
-        .hero-tag { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.5em; color: var(--red); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 10px; }
-        .hero-tag::before { content: ''; width: 30px; height: 1px; background: var(--red); }
-        .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4rem, 10vw, 9.5rem); line-height: 0.85; letter-spacing: 0.02em; margin-bottom: 1rem; }
-        .hero-sub { font-family: 'Noto Serif KR', serif; font-weight: 200; font-size: 1rem; color: var(--muted); letter-spacing: 0.1em; line-height: 1.8; }
-
-        /* ══════════════════════════════
-            SECTION COMMON
-        ══════════════════════════════ */
-        section { padding: 8rem 4rem; position: relative; }
-        .sec-num { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; letter-spacing: 0.5em; color: var(--red); margin-bottom: 0.8rem; }
-        .sec-en { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem, 6vw, 5rem); letter-spacing: 0.05em; line-height: 1; margin-bottom: 0.5rem; }
-        .sec-ko { font-family: 'Noto Serif KR', serif; font-weight: 200; font-size: 0.9rem; letter-spacing: 0.2em; color: var(--red); margin-bottom: 3.5rem; }
-        .sec-rule { width: 50px; height: 1px; background: var(--red); margin-bottom: 4rem; }
-
-        /* ══════════════════════════════
-            SCHEDULE (CALENDAR)
-        ══════════════════════════════ */
-        #schedule { background: var(--dark); }
-        .cal-wrap { display: flex; gap: 5rem; align-items: flex-start; flex-wrap: wrap; }
-        
-        .cal-box { flex: 0 0 auto; background: #000; padding: 2rem; border: 1px solid var(--g1); border-radius: 4px; }
-        .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
-        .cal-month { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.1em; color: var(--white); }
-        .cal-nav { width: 32px; height: 32px; border: 1px solid var(--g2); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: 0.3s; }
-        .cal-nav:hover { border-color: var(--red); color: var(--red); }
-        
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 45px); gap: 5px; }
-        .cal-dname { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: #555; text-align: center; padding-bottom: 10px; }
-        .cal-cell { 
-            width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; 
-            font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #444; 
-            border-radius: 2px; transition: 0.2s; cursor: default;
-        }
-        .cal-cell.ev { color: var(--white); cursor: pointer; position: relative; }
-        .cal-cell.ev::after { content: ''; position: absolute; bottom: 6px; width: 4px; height: 4px; background: var(--red); border-radius: 50%; }
-        .cal-cell.ev:hover { background: var(--g1); color: var(--red); }
-        .cal-cell.act { background: var(--red); color: #000; font-weight: bold; }
-        .cal-cell.act::after { background: #000; }
-        
-        .ev-panel { flex: 1; min-width: 320px; }
-        .ev-date { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--red); border-bottom: 1px solid var(--g1); padding-bottom: 1rem; margin-bottom: 1.5rem; }
-        .ev-item { 
-            display: flex; align-items: center; gap: 2rem; padding: 1.2rem 0; 
-            border-bottom: 1px solid rgba(255,255,255,0.03); transition: 0.3s;
-        }
-        .ev-item:hover { padding-left: 10px; background: rgba(255,255,255,0.01); }
-        .ev-time { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--red); width: 60px; }
-        .ev-info { flex: 1; }
-        .ev-title { font-family: 'Noto Serif KR', serif; font-size: 1rem; font-weight: 400; margin-bottom: 4px; }
-        .ev-meta { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--muted); }
-        .ev-book { 
-            font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; 
-            border: 1px solid rgba(232,0,45,0.4); color: var(--red); padding: 0.4rem 1rem;
-            transition: 0.3s;
-        }
-        .ev-book:hover { background: var(--red); color: #000; }
-
-        /* ══════════════════════════════
-            RANKING (AUTOPLAY CAROUSEL)
-        ══════════════════════════════ */
-        #ranking { background: var(--black); padding-left: 0; padding-right: 0; overflow: hidden; }
-        .ranking-head { padding: 0 4rem 4rem; }
-        
-        .reel-section { position: relative; width: 100%; }
-        .reel-film-strip { display: flex; align-items: center; gap: 6px; padding: 8px 15px; background: #080808; overflow: hidden; width: 100%; }
-        .reel-fhole { min-width: 36px; height: 24px; border-radius: 4px; background: #000; border: 1.5px solid #222; flex-shrink: 0; }
-        
-        .carousel-wrap { position: relative; padding: 5rem 0; display: flex; align-items: center; background: #050505; }
-        .carousel-track-outer { flex: 1; overflow: hidden; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
-        .carousel-track {
-    display: flex;
-    align-items: center;
-    width: max-content;
-    animation: slideLoop 55s linear infinite;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 TIDAL FILM FESTIVAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Bebas+Neue&family=Noto+Serif+KR:wght@200;300;400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --red:#B8001A;
+  --black:#000;--dark:#070707;--d2:#0c0c0c;
+  --g1:#161616;--g2:#202020;--g3:#2e2e2e;
+  --white:#EBE7E0;--muted:rgba(235,231,224,0.4);
+  --kr:'Noto Serif KR',serif;
+  --en:'Cormorant Garamond',serif;
+  --hd:'Bebas Neue',sans-serif;
 }
-@keyframes slideLoop {
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(-50%);
-    }
+html,body{width:100%;height:100%;}
+body{background:var(--black);color:var(--white);font-family:var(--kr);overflow:hidden;-webkit-font-smoothing:antialiased;}
+img{display:block;max-width:100%;}
+button{cursor:pointer;border:none;background:none;font-family:inherit;color:inherit;}
+
+/* ── 인트로 ── */
+#intro{
+  position:fixed;inset:0;z-index:9000;background:#000;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  transition:opacity .9s,visibility .9s;
 }
-        .c-card { 
-            flex-shrink: 0; width: 260px; padding: 0 15px; transition: 0.8s cubic-bezier(0.23, 1, 0.32, 1); 
-            cursor: pointer; position: relative; opacity: 0.3; transform: scale(0.8) rotateY(30deg);
-        }
-        .c-card:hover {
-    transform: scale(1.06);
-    transition: 0.4s;
-    z-index: 10;
+#intro.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+.zoom-box{
+  position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1800&q=90') center/cover no-repeat;
+  filter:brightness(.3) saturate(.5);
+  transform-origin:center center;will-change:transform;
 }
-        .c-card.center { opacity: 1; transform: scale(1.3) translateZ(50px) rotateY(0); z-index: 100; }
-        .c-card.side { opacity: 0.6; transform: scale(1) rotateY(0); z-index: 5; }
-
-        .c-poster { aspect-ratio: 2/3; overflow: hidden; position: relative; background: #111; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .c-poster img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.95); transition: 0.5s; }
-        .c-card.center img { filter: grayscale(0); }
-        .c-poster::after {
-            content: ''; position: absolute; inset: 0; 
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%);
-        }
-        .c-rank { 
-            position: absolute; top: 10px; right: 15px; z-index: 10;
-            font-family: 'Bebas Neue', sans-serif; font-size: 4rem; color: rgba(232,0,45,0.75);
-            line-height: 1;
-        }
-        .c-card.center .c-rank { color: var(--red); opacity: 0.8; }
-        
-        .c-info { padding: 1.5rem 0 0; text-align: center; opacity: 0; transition: 0.4s; }
-        .c-card.center .c-info { opacity: 1; }
-        .c-title { font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 1rem; margin-bottom: 5px; color: var(--white); }
-        .c-score { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--red); }
-
-        /* ══════════════════════════════
-            LINEUP (GRID)
-        ══════════════════════════════ */
-        #lineup { background: var(--dark); }
-        .filter-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 4rem; }
-        .f-btn { 
-            font-family: 'Noto Sans KR', sans-serif; font-size: 0.75rem; font-weight: 500;
-            border: 1px solid var(--g2); color: var(--muted); padding: 0.6rem 1.5rem; transition: 0.3s;
-        }
-        .f-btn.on, .f-btn:hover { border-color: var(--red); color: var(--red); }
-        
-        .lineup-reel { position: relative; }
-        .lineup-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
-            gap: 2rem; margin: 3rem 0;
-        }
-        .lineup-card { 
-            position: relative; overflow: hidden; cursor: pointer; aspect-ratio: 2/3;
-            background: #111; transition: 0.5s; border: 1px solid #1a1a1a;
-        }
-        .lineup-card img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6) grayscale(0.3); transition: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        .lineup-card:hover img { filter: brightness(1) grayscale(0); transform: scale(1.1); }
-        
-        .lc-info { 
-            position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem 1.5rem;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
-            z-index: 10; transform: translateY(20px); transition: 0.4s;
-        }
-        .lineup-card:hover .lc-info { transform: translateY(0); }
-        .lc-genre { 
-            font-family: 'Share Tech Mono', monospace; font-size: 0.5rem; color: var(--red);
-            text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.2em;
-        }
-        .lc-title { font-family: 'Noto Serif KR', serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 5px; }
-        .lc-meta { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--muted); }
-
-        /* ══════════════════════════════
-            MODALS & LOGIN
-        ══════════════════════════════ */
-        .overlay { 
-            position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,0.92); 
-            display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px);
-        }
-        .overlay.open { display: flex; }
-        
-        /* Login Modal UI */
-        .login-box { width: 400px; background: var(--d2); border: 1px solid var(--g2); padding: 3rem; text-align: center; }
-        .login-box h2 { font-family: 'Bebas Neue'; font-size: 2.5rem; color: var(--red); margin-bottom: 2rem; letter-spacing: 0.1em; }
-        .input-group { margin-bottom: 1.5rem; text-align: left; }
-        .input-group label { display: block; font-family: 'Share Tech Mono'; font-size: 0.6rem; color: #555; margin-bottom: 0.5rem; }
-        .input-group input { width: 100%; background: #000; border: 1px solid var(--g2); padding: 0.8rem; color: #fff; font-family: inherit; }
-        .input-group input:focus { border-color: var(--red); }
-
-        .bk-box { 
-            width: min(850px, 95vw); max-height: 90vh; background: var(--d2); 
-            border: 1px solid var(--g2); position: relative; overflow-y: auto;
-        }
-        .bk-hd { display: flex; gap: 2.5rem; padding: 3rem; border-bottom: 1px solid var(--g1); background: #0a0a0a; }
-        .bk-poster { width: 140px; aspect-ratio: 2/3; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .bk-poster img { width: 100%; height: 100%; object-fit: cover; }
-        .bk-meta h3 { font-family: 'Noto Serif KR', serif; font-size: 1.8rem; margin-bottom: 1rem; }
-        .bk-meta p { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; }
-        
-        .bk-body { padding: 3rem; }
-        .bk-step { display: none; }
-        .bk-step.on { display: block; animation: fadeIn 0.5s forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .seat-grid { 
-            display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; 
-            max-width: 500px; margin: 3rem auto; perspective: 1000px;
-        }
-        .seat { 
-            aspect-ratio: 1; background: var(--g1); border: 1px solid #333; 
-            border-radius: 4px 4px 0 0; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; font-family: 'Share Tech Mono'; font-size: 0.6rem; color: #444;
-        }
-        .seat:hover { border-color: var(--red); color: var(--red); }
-        .seat.sel { background: var(--red); border-color: var(--red); color: #000; box-shadow: 0 0 15px var(--red); }
-        .seat.taken { opacity: 0.2; cursor: not-allowed; background: #050505; }
-
-        .screen-bar { 
-            width: 80%; height: 4px; background: #444; margin: 0 auto 4rem; 
-            border-radius: 50%; box-shadow: 0 10px 20px rgba(255,255,255,0.1); 
-        }
-
-        .pay-btn {
-            width: 100%; padding: 1.2rem; background: var(--red); border: none; 
-            color: #fff; font-family: 'Share Tech Mono'; font-size: 1rem; 
-            letter-spacing: 0.3em; margin-top: 2rem; transition: 0.3s;
-        }
-        .pay-btn:disabled { background: var(--g2); color: #555; cursor: not-allowed; }
-        .pay-btn:hover:not(:disabled) { background: #ff1a43; box-shadow: 0 0 30px rgba(232,0,45,0.4); }
-
-        /* ══════════════════════════════
-            FOOTER
-        ══════════════════════════════ */
-        footer { 
-            padding: 5rem 4rem; border-top: 1px solid var(--g1); 
-            display: flex; justify-content: space-between; align-items: center;
-            background: #000;
-        }
-        .foot-logo { font-family: 'Bebas Neue'; font-size: 1.2rem; opacity: 0.3; }
-        .foot-info { font-family: 'Share Tech Mono'; font-size: 0.6rem; color: #444; letter-spacing: 0.1em; }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: var(--red); }
-    html, body {
-    height: 100%;
+/* 필름 구멍 — 상단만 */
+.intro-film{
+  position:absolute;top:0;left:0;right:0;height:40px;z-index:2;
+  background:#000;
+  background-image:repeating-linear-gradient(90deg,transparent 0,transparent 30px,#000 30px,#000 36px);
+  background-size:48px 10px;background-repeat:repeat-x;background-position:center;
 }
-    </style>
+.intro-title{
+  position:absolute;z-index:3;text-align:center;pointer-events:none;
+  width:100%;transition:opacity .3s,transform .3s;
+}
+.intro-title h1{
+  font-family:var(--hd);
+  font-size:clamp(5rem,18vw,17rem);
+  line-height:.85;letter-spacing:-.01em;color:var(--white);
+}
+.intro-title h1 em{color:var(--red);font-style:normal;}
+.intro-title p{
+  font-family:var(--kr);font-weight:200;font-size:.95rem;
+  letter-spacing:.35em;color:rgba(235,231,224,.3);margin-top:1.4rem;
+}
+#enterBtn {
+  position: absolute; bottom: 18%; left: 50%; transform: translateX(-50%);
+  z-index: 4; font-family: var(--en); font-style: italic; font-weight: 400; font-size: 1.05rem; letter-spacing: 0.25em;
+  color: var(--white); padding: 5px 10px; opacity: 0; pointer-events: none; transition: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+#enterBtn::after{content:'';display:block;width:100%;height:1px;background:var(--red);margin-top:6px;transform:scaleX(0);transition:transform .5s .1s;}
+#enterBtn.show{opacity:1;pointer-events:auto;}
+#enterBtn.show::after{transform:scaleX(1);}
+.scroll-hint{
+  position:absolute;bottom:4rem;left:50%;transform:translateX(-50%);
+  font-family:var(--kr);font-weight:200;font-size:.78rem;letter-spacing:.4em;
+  color:rgba(235,231,224,.2);text-align:center;pointer-events:none;
+}
+.scroll-hint-line{width:1px;height:32px;margin:7px auto 0;background:linear-gradient(to bottom,var(--red),transparent);animation:sl 2s infinite;}
+@keyframes sl{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+
+/* ── 사이트 ── */
+#site{position:fixed;inset:0;opacity:0;visibility:hidden;transition:opacity .7s;display:flex;flex-direction:column;}
+#site.show{opacity:1;visibility:visible;}
+
+/* ── 헤더 ── */
+header {
+  box-sizing: border-box;
+  width: 100%;
+  flex-shrink: 0;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+  padding: .8rem 2.5rem;
+  background: var(--black);
+  border-bottom: 1px solid var(--g1);
+  z-index: 100;
+}
+.logo {
+  font-family: var(--kr);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: .04em;
+  color: var(--white);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.logo em {
+  color: var(--red) !important;
+  font-style: normal !important;
+}
+nav {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: .2rem;
+}
+nav a {
+  font-family: var(--kr); font-weight: 300; font-size: .82rem; letter-spacing: .04em;
+  color: var(--muted); padding: .5rem .9rem; text-decoration: none;
+  transition: color .3s; background: none; border: none; cursor: pointer;
+  white-space: nowrap;
+}
+nav a:hover, nav a.on { color: var(--white); }
+nav a.on { border-bottom: none; }
+nav a {
+  font-family: var(--kr); font-weight: 300; font-size: .82rem; letter-spacing: .04em;
+  color: var(--muted); padding: .5rem .9rem; text-decoration: none;
+  transition: color .3s; background: none; border: none; cursor: pointer;
+  white-space: nowrap;
+}
+nav a:hover, nav a.on { color: var(--white); }
+nav a.on { border-bottom: none; }
+
+/* ── 페이지 ── */
+#pages{flex:1;position:relative;overflow:hidden;}
+.pg{
+  position:absolute;
+  inset:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .45s;
+  scroll-behavior: smooth;
+}
+.pg.on{opacity:1;visibility:visible;pointer-events:all;}
+.pg::-webkit-scrollbar { width: 0px; background: transparent; }
+.pg { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── 버튼 ── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--kr);font-weight:300;font-size:.82rem;letter-spacing:.04em;
+  color:var(--muted);background:none;border:none;padding:.4rem 0;
+  border-bottom:1px solid transparent;transition:color .3s,border-color .3s;cursor:pointer;
+}
+.btn:hover{color:var(--white);border-bottom-color:var(--g3);}
+.btn.red{color:var(--red);}
+.btn.red:hover{border-bottom-color:var(--red);}
+.btn.box{
+  border:1px solid var(--g2);color:var(--muted);
+  padding:.65rem 1.8rem;transition:border-color .3s,color .3s;
+}
+.btn.box::after{display:none;}
+.btn.box:hover{border-color:var(--white);color:var(--white);}
+.btn.box.fill{background:var(--red);border-color:var(--red);color:#fff;}
+.btn.box.fill:hover{background:#9a0014;border-color:#9a0014;}
+.btn.box:disabled{opacity:.2;pointer-events:none;}
+.btn.sm{font-size:.75rem;padding:.28rem 0;}
+.btn.box.sm{padding:.38rem 1rem;}
+
+/* X / 뒤로 버튼 */
+.mclose,.mbk{
+  position:absolute;top:16px;z-index:20;
+  width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--kr);font-size:.9rem;color:var(--white);
+  border:1px solid var(--g2);background:rgba(0,0,0,.8);
+  transition:background .25s,border-color .25s;
+}
+.mclose{right:16px;}
+.mbk{left:16px;}
+.mclose:hover{background:var(--red);border-color:var(--red);}
+.mbk:hover{background:var(--g2);}
+.mbk.hidden{display:none !important;}
+
+/* ── 섹션 헤더 ── */
+.pi{padding:3.5rem 2.8rem 4.5rem;}
+.sec-ttl{
+  font-family:var(--kr);font-weight:300;
+  font-size:.72rem;letter-spacing:.18em;color:var(--muted);
+  margin-bottom:1.2rem;text-transform:uppercase;display:block;
+}
+.sec-h{
+  font-family:var(--kr);font-weight:700;
+  font-size:clamp(2rem,4.5vw,3.8rem);
+  letter-spacing:.02em;line-height:1;margin-bottom:.3rem;
+}
+.sec-rule{width:32px;height:1px;background:var(--red);margin:1.4rem 0 3.2rem;}
+
+/* ── 홈 ── */
+.hero{height:100vh;position:relative;display:flex;align-items:flex-end;overflow:hidden;}
+.hero-bg{
+  position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=1800&q=90') center 30%/cover no-repeat;
+  filter:brightness(.25) saturate(.5);
+}
+.hero-ov{position:absolute;inset:0;background:linear-gradient(to top,var(--black) 0%,transparent 60%);}
+/* 필름 구멍 상단만 */
+.hero-film{
+  position:absolute;top:0;left:0;right:0;height:40px;z-index:3;
+  background:#000;
+  background-image:repeating-linear-gradient(90deg,transparent 0,transparent 30px,#000 30px,#000 36px);
+  background-size:48px 10px;background-repeat:repeat-x;background-position:center;
+  border-bottom:1px solid #111;
+}
+.hero-body{position:relative;z-index:5;padding:0 3rem 5rem;}
+/*  새로 넣을 히어로 텍스트 스타일 */
+.hero-tag { font-family: var(--en); font-weight: 400; font-size: .85rem; letter-spacing: .3em; color: var(--red); margin-bottom: 1rem; }
+.hero-h1 { font-family: var(--hd); font-size: clamp(3.5rem, 10vw, 10rem); line-height: .9; margin-bottom: 1.2rem; letter-spacing: -0.02em; }
+.hero-sub { font-family: var(--en); font-style: italic; font-weight: 300; font-size: 1.05rem; color: var(--white); opacity: 0.7; line-height: 1.5; letter-spacing: .06em; }
+.hero-acts{margin-top:1.6rem;display:flex;gap:1.2rem;align-items:center;}
+
+/* 홈 바로가기 */
+.qs-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--g1);}
+.qs-card{padding:2.2rem 2.5rem;cursor:pointer;border-right:1px solid var(--g1);transition:background .3s;}
+.qs-card:last-child{border-right:none;}
+.qs-card:hover{background:var(--g1);}
+.qs-n{font-family:var(--en);font-style:italic;font-size:.88rem;color:var(--red);margin-bottom:.7rem;}
+.qs-h{font-family:var(--kr);font-weight:400;font-size:1rem;letter-spacing:.04em;line-height:1.3;margin-bottom:.3rem;}
+.qs-sub{font-family:var(--kr);font-weight:200;font-size:.78rem;color:var(--muted);letter-spacing:.04em;}
+
+/* ── 일정 ── */
+#pg-schedule{background:var(--dark);}
+.cal-wrap{display:flex;gap:4rem;flex-wrap:wrap;align-items:flex-start;}
+.cal-box{flex-shrink:0;background:var(--black);border:1px solid var(--g2);padding:1.8rem;}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.cal-m{font-family:var(--kr);font-weight:400;font-size:1rem;letter-spacing:.06em;}
+.cal-nb{width:28px;height:28px;border:1px solid var(--g2);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .25s;}
+.cal-nb:hover{border-color:var(--white);color:var(--white);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,38px);gap:2px;}
+.cal-dn{font-family:var(--kr);font-weight:200;font-size:.72rem;color:var(--g3);text-align:center;padding-bottom:8px;letter-spacing:.06em;}
+.cal-cell{width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-family:var(--en);font-size:.88rem;color:var(--g3);transition:background .2s;cursor:default;}
+.cal-cell.has{color:var(--white);cursor:pointer;position:relative;}
+.cal-cell.has::after{content:'';position:absolute;bottom:5px;width:3px;height:3px;background:var(--red);border-radius:50%;}
+.cal-cell.has:hover{background:var(--g1);}
+.cal-cell.sel{background:var(--red);color:#fff;}
+.cal-cell.sel::after{background:#fff;}
+.ev-panel{flex:1;min-width:260px;}
+.ev-date{font-family:var(--kr);font-weight:400;font-size:1.05rem;letter-spacing:.06em;border-bottom:1px solid var(--g2);padding-bottom:.8rem;margin-bottom:1.3rem;}
+.ev-row{display:flex;align-items:center;gap:1.4rem;padding:.9rem 0;border-bottom:1px solid rgba(255,255,255,.04);transition:padding-left .25s;}
+.ev-row:hover{padding-left:6px;}
+.ev-time{font-family:var(--en);font-style:italic;font-size:1rem;color:var(--red);width:50px;flex-shrink:0;}
+.ev-info{flex:1;}
+.ev-title{font-family:var(--kr);font-weight:400;font-size:.9rem;margin-bottom:2px;letter-spacing:.02em;}
+.ev-venue{font-family:var(--kr);font-weight:200;font-size:.75rem;color:var(--muted);}
+.no-ev{font-family:var(--kr);font-weight:200;font-size:.82rem;color:var(--g3);margin-top:1.5rem;letter-spacing:.04em;}
+/* 다음 상영 */
+.cd-sec{margin-top:5rem;padding-top:3rem;border-top:1px solid var(--g1);}
+.cd-film{font-family:var(--kr);font-weight:200;font-size:.9rem;color:var(--muted);margin-bottom:.8rem;}
+.cd-timer{display:flex;align-items:flex-end;gap:.4rem;margin-bottom:2rem;}
+.cd-unit{display:flex;flex-direction:column;align-items:center;}
+.cd-n{font-family:var(--hd);font-size:clamp(3rem,8vw,6.5rem);line-height:1;color:var(--white);}
+.cd-l{font-family:var(--kr);font-weight:200;font-size:.72rem;color:var(--muted);margin-top:3px;letter-spacing:.1em;}
+.cd-sep{font-family:var(--hd);font-size:clamp(2.5rem,7vw,5.5rem);color:var(--red);line-height:1;padding-bottom:.15rem;}
+/* 뉴스레터 */
+.nl-bar{background:var(--g1);border-top:1px solid var(--g2);padding:3rem;display:flex;align-items:flex-start;justify-content:space-between;gap:3rem;flex-wrap:wrap;margin-top:3rem;}
+.nl-h{font-family:var(--kr);font-weight:400;font-size:1.1rem;letter-spacing:.04em;margin-bottom:.4rem;}
+.nl-sub{font-family:var(--kr);font-weight:200;font-size:.82rem;color:var(--muted);}
+.nl-form{display:flex;border-bottom:1px solid var(--g3);max-width:420px;flex:1;}
+.nl-input{flex:1;background:none;border:none;padding:.65rem 0;font-family:var(--kr);font-weight:300;font-size:.88rem;color:var(--white);outline:none;}
+.nl-input::placeholder{color:var(--g3);}
+.nl-submit{font-family:var(--kr);font-weight:300;font-size:.8rem;color:rgba(235,231,224,.4);background:none;border:none;cursor:pointer;padding:0 0 0 1rem;transition:color .25s;letter-spacing:.04em;}
+.nl-submit:hover{color:var(--white);}
+
+/* ── 상영작 ── */
+#pg-ranking{background:var(--black);}
+/* 순위 */
+.rank-scroll{overflow:hidden;padding:2.5rem 0;background:var(--dark);}
+.rank-track{display:flex;align-items:flex-start;width:max-content;animation:loop 55s linear infinite;}
+.rank-scroll:hover .rank-track{animation-play-state:paused;}
+@keyframes loop{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.rc{width:185px;padding:0 8px;flex-shrink:0;cursor:pointer;opacity:.42;}
+.rc:hover{opacity:1;}
+.rc-poster{aspect-ratio:2/3;overflow:hidden;position:relative;}
+.rc-poster img{width:100%;height:100%;object-fit:cover;filter:grayscale(.5) brightness(.7);}
+.rc-poster::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8),transparent 50%);}
+.rc-n{position:absolute;top:6px;right:8px;z-index:3;font-family:var(--hd);font-size:2.8rem;line-height:1;color:rgba(184,0,26,.35);}
+.rc-info{padding:.7rem 0 0;opacity:0;}
+.rc:hover .rc-info{opacity:1;}
+.rc-title{font-family:var(--kr);font-weight:400;font-size:.82rem;margin-bottom:2px;}
+.rc-score{font-family:var(--en);font-style:italic;font-size:.88rem;color:var(--red);}
+/* 필터 + 그리드 */
+.filter-row{display:flex;gap:1.4rem;flex-wrap:wrap;margin-bottom:2.5rem;border-bottom:1px solid var(--g1);padding-bottom:1.4rem;}
+.f-btn{font-family:var(--kr);font-weight:300;font-size:.85rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:.3rem 0;transition:color .25s;letter-spacing:.04em;}
+.f-btn:hover,.f-btn.on{color:var(--white);}
+.f-btn.on{border-bottom:1px solid var(--red);}
+.lc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:1px;background:var(--g2);margin:0;}
+.lc{position:relative;overflow:hidden;cursor:pointer;aspect-ratio:2/3;background:#0e0e0e;}
+.lc img{width:100%;height:100%;object-fit:cover;filter:brightness(.5) grayscale(.2);}
+.lc:hover img{filter:brightness(.85) grayscale(0);}
+.lc-info{position:absolute;bottom:0;left:0;right:0;padding:1.3rem 1.1rem;background:linear-gradient(to top,rgba(0,0,0,.95),transparent);z-index:5;}
+.lc-genre{font-family:var(--kr);font-weight:200;font-size:.7rem;color:var(--red);margin-bottom:4px;letter-spacing:.06em;}
+.lc-title{font-family:var(--kr);font-weight:400;font-size:.88rem;margin-bottom:2px;}
+.lc-date{font-family:var(--en);font-style:italic;font-size:.82rem;color:var(--muted);}
+.pg-footer{padding:2rem 3rem;border-top:1px solid var(--g1);display:flex;justify-content:space-between;align-items:center;}
+.pg-foot-l{font-family:var(--kr);font-weight:200;font-size:.82rem;opacity:.2;letter-spacing:.08em;}
+.pg-foot-r{font-family:var(--kr);font-weight:200;font-size:.72rem;color:var(--g3);letter-spacing:.06em;}
+
+/* ── 감독 소개 ── */
+#pg-spotlight{background:var(--dark);}
+.spot-wrap{display:flex;min-height:calc(100vh - 56px);}
+.spot-img{flex:0 0 44%;overflow:hidden;position:relative;}
+.spot-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.5);}
+.spot-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,transparent 65%,var(--dark) 100%);}
+.spot-body{flex:1;padding:4rem 3.5rem;display:flex;flex-direction:column;justify-content:center;background:var(--dark);}
+.spot-tag{font-family:var(--kr);font-weight:200;font-size:.78rem;letter-spacing:.2em;color:var(--red);margin-bottom:1rem;}
+.spot-name{font-family:var(--hd);font-size:clamp(2.5rem,5.5vw,5rem);letter-spacing:.03em;line-height:.92;margin-bottom:.4rem;}
+.spot-nat{font-family:var(--kr);font-weight:200;font-size:.8rem;color:var(--muted);margin-bottom:1.8rem;letter-spacing:.06em;}
+.spot-quote{font-family:var(--en);font-style:italic;font-size:1.05rem;line-height:1.95;color:rgba(235,231,224,.6);padding-left:1.2rem;border-left:1px solid var(--g2);margin-bottom:2rem;}
+.spot-films{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem;}
+.spot-chip{font-family:var(--kr);font-weight:200;font-size:.78rem;color:var(--muted);border:1px solid var(--g2);padding:.28rem .85rem;cursor:pointer;transition:all .25s;letter-spacing:.04em;}
+.spot-chip:hover{border-color:var(--red);color:var(--red);}
+.spot-navs{display:flex;gap:.7rem;align-items:center;}
+.spot-arr{
+  width:44px;height:44px;background:var(--g1);border:1px solid var(--g2);
+  color:var(--muted);display:flex;align-items:center;justify-content:center;
+  font-size:1rem;transition:all .25s;
+}
+.spot-arr:hover{border-color:var(--white);color:var(--white);}
+/* 양쪽 화살표 */
+.spot-side{position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:44px;height:44px;background:rgba(0,0,0,.6);border:1px solid rgba(235,231,224,.15);color:rgba(235,231,224,.5);display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all .25s;}
+.spot-side:hover{background:var(--red);border-color:var(--red);color:#fff;}
+.spot-side.l{left:1rem;}
+.spot-side.r{right:1rem;}
+
+/* ── 리뷰 ── */
+#pg-reviews{background:var(--dark);}
+.rw-box{background:var(--black);border:1px solid var(--g2);padding:2.2rem;margin-bottom:3rem;}
+.rw-title{font-family:var(--kr);font-weight:400;font-size:1.05rem;letter-spacing:.04em;margin-bottom:.2rem;}
+.rw-sub{font-family:var(--kr);font-weight:200;font-size:.82rem;color:var(--muted);margin-bottom:1.6rem;}
+select.rw-f,input.rw-f,textarea.rw-f{
+  width:100%;background:none;border:none;border-bottom:1px solid var(--g2);
+  color:var(--white);font-family:var(--kr);font-weight:300;font-size:.88rem;
+  padding:.65rem 0;margin-bottom:.9rem;outline:none;transition:border-color .25s;
+}
+select.rw-f option{background:var(--g1);}
+select.rw-f:focus,input.rw-f:focus,textarea.rw-f:focus{border-bottom-color:var(--red);}
+textarea.rw-f{resize:none;height:76px;line-height:1.7;}
+.star-row{display:flex;gap:4px;margin-bottom:.9rem;}
+.star{font-size:1.1rem;color:var(--g3);transition:color .18s;cursor:pointer;}
+.star.on{color:var(--red);}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--g2);margin-top:3rem;}
+.rev-card{background:var(--d2);padding:1.8rem;transition:background .25s;}
+.rev-card:hover{background:var(--g1);}
+.rev-stars{color:var(--red);font-size:.8rem;margin-bottom:.8rem;}
+.rev-text{font-family:var(--kr);font-weight:300;font-size:.88rem;line-height:1.95;color:rgba(235,231,224,.65);margin-bottom:1rem;}
+.rev-author{font-family:var(--kr);font-weight:200;font-size:.75rem;color:var(--muted);}
+.rev-film{font-family:var(--en);font-style:italic;font-size:.82rem;color:rgba(235,231,224,.4);margin-top:2px;}
+
+/* ── 추천 ── */
+#pg-match{background:var(--dark);}
+.match-box{width:100%;max-width:540px;margin:0 auto;background:var(--black);border:1px solid var(--g2);padding:2.8rem;}
+.ms{display:none;}.ms.on{display:block;animation:fup .4s ease-out forwards;}
+@keyframes fup{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.mq-n{font-family:var(--en);font-style:italic;font-size:.9rem;color:var(--red);margin-bottom:.6rem;}
+.mq{font-family:var(--kr);font-weight:300;font-size:1.05rem;line-height:1.85;color:var(--white);margin-bottom:1.6rem;letter-spacing:.02em;}
+.mopts{display:flex;flex-direction:column;gap:.55rem;}
+.mopt{font-family:var(--kr);font-weight:300;font-size:.9rem;padding:.8rem 1.1rem;border:1px solid var(--g2);background:none;color:var(--muted);text-align:left;transition:all .25s;letter-spacing:.02em;}
+.mopt:hover{color:var(--white);border-color:var(--g3);background:var(--g1);}
+.m-prog{width:100%;height:1px;background:var(--g2);margin-bottom:2.2rem;}
+.m-prog-bar{height:100%;background:var(--red);transition:width .45s ease-in-out;}
+.match-result-poster{width:120px;margin:0 auto 1.2rem;aspect-ratio:2/3;overflow:hidden;}
+.match-result-poster img{width:100%;height:100%;object-fit:cover;}
+.match-r-title{font-family:var(--kr);font-weight:400;font-size:1.2rem;margin-bottom:.3rem;letter-spacing:.02em;}
+.match-r-meta{font-family:var(--kr);font-weight:200;font-size:.8rem;color:var(--muted);}
+
+/* ── 모달 ── */
+.ov{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.ov.open{display:flex;}
+.mbox{background:var(--d2);border:1px solid var(--g2);position:relative;}
+/* 영화 정보 */
+.film-mbox{width:min(680px,94vw);max-height:90vh;overflow-y:auto;}
+.fm-wrap{display:flex;}
+.fm-poster{width:180px;flex-shrink:0;overflow:hidden;}
+.fm-poster img{width:100%;height:100%;object-fit:cover;}
+.fm-body{flex:1;padding:2.5rem;}
+.fm-genre{font-family:var(--kr);font-weight:200;font-size:.75rem;color:var(--red);margin-bottom:.6rem;letter-spacing:.1em;}
+.fm-title{font-family:var(--kr);font-weight:700;font-size:1.4rem;line-height:1.2;margin-bottom:.4rem;letter-spacing:.02em;}
+.fm-dir{font-family:var(--kr);font-weight:200;font-size:.85rem;color:var(--muted);margin-bottom:1.3rem;}
+.fm-det{font-family:var(--kr);font-weight:200;font-size:.82rem;color:var(--muted);margin-bottom:.35rem;}
+.fm-det span{color:var(--white);}
+.fm-stars{color:var(--red);font-size:.85rem;margin:.9rem 0 1.3rem;}
+.fm-acts{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;}
+/* 예매 */
+.bk-mbox{width:min(780px,94vw);max-height:92vh;overflow-y:auto;}
+.bk-hdr{display:flex;gap:1.8rem;padding:2rem;border-bottom:1px solid var(--g2);background:var(--black);}
+.bk-poster{width:80px;aspect-ratio:2/3;flex-shrink:0;overflow:hidden;}
+.bk-poster img{width:100%;height:100%;object-fit:cover;}
+.bk-meta h3{font-family:var(--kr);font-weight:700;font-size:1.2rem;margin-bottom:.5rem;letter-spacing:.02em;line-height:1.2;}
+.bk-meta p{font-family:var(--kr);font-weight:200;font-size:.82rem;color:var(--muted);margin-bottom:.28rem;letter-spacing:.04em;}
+.bk-body{padding:2rem 2.2rem;}
+.bk-step{display:none;}.bk-step.on{display:block;animation:fup .35s ease-out forwards;}
+.bk-step-n{font-family:var(--kr);font-weight:200;font-size:.78rem;color:var(--red);margin-bottom:.35rem;letter-spacing:.1em;}
+.bk-rule{height:1px;background:var(--g2);margin-bottom:1.8rem;}
+.time-grid{display:flex;flex-wrap:wrap;gap:.6rem;}
+.tc{flex:1;min-width:120px;padding:1rem;border:1px solid var(--g2);background:none;text-align:center;transition:border-color .25s;cursor:pointer;}
+.tc:hover{border-color:var(--white);}
+.tc .tc-t{font-family:var(--hd);font-size:1.9rem;display:block;margin-bottom:3px;letter-spacing:.04em;}
+.tc .tc-h{font-family:var(--kr);font-weight:200;font-size:.72rem;color:var(--muted);}
+.tc .tc-s{font-family:var(--kr);font-weight:200;font-size:.72rem;color:var(--red);display:block;margin-top:5px;}
+.screen-bar{width:60%;height:2px;background:linear-gradient(to right,transparent,rgba(235,231,224,.4),transparent);margin:0 auto .6rem;}
+.screen-lbl{text-align:center;font-family:var(--kr);font-weight:200;font-size:.72rem;letter-spacing:.35em;color:var(--g3);margin-bottom:2rem;}
+.seat-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;max-width:480px;margin:0 auto;}
+.seat{aspect-ratio:1;background:var(--g1);border:1px solid #1e1e1e;border-radius:2px 2px 0 0;cursor:pointer;transition:background .18s,border-color .18s;display:flex;align-items:center;justify-content:center;font-family:var(--en);font-size:.5rem;color:var(--g3);}
+.seat:hover:not(.taken){background:rgba(184,0,26,.2);border-color:var(--red);color:var(--red);}
+.seat.sel{background:var(--red);border-color:var(--red);color:#fff;}
+.seat.taken{opacity:.12;cursor:not-allowed;}
+.seat-sum{display:flex;justify-content:space-between;align-items:center;margin-top:1.8rem;padding-top:1.6rem;border-top:1px solid var(--g2);}
+.seat-sum-l{font-family:var(--kr);font-weight:200;font-size:.78rem;color:var(--g3);letter-spacing:.1em;}
+.seat-sum-v{font-family:var(--kr);font-size:.9rem;color:var(--red);margin-top:3px;}
+.succ-wrap{text-align:center;padding:3.5rem 2rem;}
+.succ-ring{width:56px;height:56px;border:1px solid var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 1.3rem;color:var(--red);font-size:1.3rem;}
+.succ-t{font-family:var(--kr);font-weight:400;font-size:1.5rem;letter-spacing:.04em;margin-bottom:.6rem;}
+.succ-desc{font-family:var(--kr);font-weight:200;font-size:.88rem;color:var(--muted);line-height:1.9;}
+.succ-code{font-family:var(--en);font-style:italic;background:var(--g1);border-left:2px solid var(--red);padding:1rem 1.5rem;color:var(--red);font-size:1rem;display:inline-block;margin-top:1.8rem;letter-spacing:.08em;}
+/* 필모그래피 */
+.filmo-mbox{width:min(640px,94vw);max-height:88vh;overflow-y:auto;}
+.filmo-grid{display:flex;flex-direction:column;gap:1px;background:var(--g2);}
+.filmo-card{display:flex;gap:1.4rem;background:var(--d2);padding:1.1rem 1.4rem;cursor:pointer;transition:background .25s;align-items:center;}
+.filmo-card:hover{background:var(--g1);}
+.filmo-poster{width:50px;aspect-ratio:2/3;flex-shrink:0;overflow:hidden;}
+.filmo-poster img{width:100%;height:100%;object-fit:cover;}
+.filmo-title{font-family:var(--kr);font-weight:400;font-size:.9rem;margin-bottom:2px;}
+.filmo-meta{font-family:var(--kr);font-weight:200;font-size:.72rem;color:var(--muted);}
+.filmo-score{font-family:var(--en);font-style:italic;font-size:.82rem;color:var(--red);margin-top:2px;}
+/* ── 히어로 카운터 ── */
+.hero-counter{
+  position:absolute;bottom:5.5rem;right:3.5rem;z-index:10;
+  display:flex;gap:2.8rem;align-items:flex-end;
+}
+.hero-counter-item{text-align:right;}
+.hero-counter-n{
+  font-family:var(--hd);
+  font-size:clamp(3rem,6vw,5.5rem);
+  line-height:.88;color:var(--white);
+  display:block;letter-spacing:.02em;
+}
+.hero-counter-l{
+  font-family:var(--kr);font-weight:200;
+  font-size:.72rem;letter-spacing:.18em;
+  color:rgba(235,231,224,.45);display:block;
+  margin-top:.4rem;text-transform:uppercase;
+}
+
+/* ── 필름 스트립 타임라인 ── */
+.filmstrip-timeline{
+  background:var(--dark);
+  border-top:1px solid var(--g1);
+  overflow:hidden;
+  position:relative;
+}
+/* 상단 퍼포레이션 */
+.fst-holes{
+  height:32px;background:#000;
+  display:flex;align-items:center;gap:0;padding:0 12px;
+  border-bottom:1px solid #111;
+}
+.fst-hole{
+  min-width:22px;height:16px;border-radius:2px;
+  background:#080808;border:1px solid #1a1a1a;
+  margin-right:8px;flex-shrink:0;
+}
+/* 이벤트 트랙 */
+.fst-track{
+  display:flex;align-items:stretch;
+  border-bottom:1px solid #111;
+  flex-wrap:nowrap;
+  min-width:max-content;width:100%;
+}
+.fst-item{
+  flex:0 0 25%;padding:2.2rem 2rem;
+  border-right:1px solid var(--g1);
+  position:relative;cursor:default;
+}
+
+.fst-item:last-child{border-right:none;}
+
+/* 상단 날짜 바 */
+.fst-item::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--g2);
+}
+
+.fst-date{
+  font-family:var(--en);font-style:italic;
+  font-size:1.8rem;color:var(--muted);
+  line-height:1;display:block;margin-bottom:.7rem;
+}
+
+.fst-event{
+  font-family:var(--kr);font-weight:400;
+  font-size:.9rem;letter-spacing:.03em;color:var(--white);
+  display:block;margin-bottom:.35rem;
+}
+.fst-sub{
+  font-family:var(--kr);font-weight:200;
+  font-size:.74rem;color:var(--muted);letter-spacing:.06em;
+}
+.fst-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--g3);position:absolute;
+  top:50%;right:2rem;transform:translateY(-50%);
+}
+
+/* 하단 퍼포레이션 */
+.fst-holes.bot{border-top:1px solid #111;border-bottom:none;}
+
+</style>
 </head>
 <body>
 
-    <div class="zoom-wrapper" id="zoomWrapper">
-        <div class="intro-title-box" id="introTitle">
-            <h1>FILM <span>FESTIVAL</span></h1>
-            <p>2026 Premiere Showcase · Seoul</p>
+<!-- 인트로 -->
+<div id="intro">
+  <div class="intro-film"></div>
+  <div class="zoom-box" id="zoomBox"></div>
+  <div class="intro-title" id="introTitle">
+    <h1>TIDAL <em>FILM</em></h1>
+    <p>OCTOBER 07 — 17, 2026 / BUSAN</p>
+  </div>
+  <button id="enterBtn" onclick="enterSite()">ENTER EXPERIENCE</button>
+  <div class="scroll-hint" id="scrollHint">SCROLL TO UNCOVER<div class="scroll-hint-line"></div></div>
+</div>
+
+<!-- 사이트 -->
+<div id="site">
+<header>
+  <div class="logo" onclick="goIntro()">TIDAL <em>FILM</em></div>
+  <nav>
+    <a class="nav-btn on" onclick="go('home')">HOME</a>
+    <a class="nav-btn" onclick="go('schedule')">SCHEDULE</a>
+    <a class="nav-btn" onclick="go('ranking')">SELECTION</a>
+    <a class="nav-btn" onclick="go('spotlight')">DIRECTORS</a>
+    <a class="nav-btn" onclick="go('reviews')">REVIEWS</a>
+    <a class="nav-btn" onclick="go('match')">FINDER</a>
+  </nav>
+</header>
+
+  <div id="pages">
+
+    <!-- 홈 -->
+    <div class="pg on" id="pg-home">
+      <!--  새로 넣을 홈 화면 디자인 코드 -->
+      <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-ov"></div>
+        <div class="hero-film"></div>
+        <div class="hero-body">
+          <div class="hero-tag">OPENING FILM</div>
+          <h1 class="hero-h1">INTO THE DARK</h1>
+          <div class="hero-sub">Dir. James Croft &nbsp;·&nbsp; 127 MIN &nbsp;·&nbsp; BIFF THEATER</div>
+          <div class="hero-acts">
+            <button class="btn box fill" onclick="openBk(1)">TICKET</button>
+            <button class="btn" onclick="openFilm(1)">VIEW INFO →</button>
+          </div>
         </div>
-        <div class="zoom-image-container" id="zoomImg"></div>
-        <button class="explore-btn" id="exploreBtn" onclick="startFestival()">Explore Festival</button>
+      </div>
+
+      <div class="filmstrip-timeline">
+        <div class="fst-track">
+          <div class="fst-item">
+            <div class="fst-dot"></div>
+            <span class="fst-date">10.07</span>
+            <span class="fst-event">개막식</span>
+            <span class="fst-sub">Opening Ceremony<br>영화의전당 하늘연극장</span>
+          </div>
+          <div class="fst-item">
+            <div class="fst-dot"></div>
+            <span class="fst-date">10.09</span>
+            <span class="fst-event">감독 GV</span>
+            <span class="fst-sub">Director Q&amp;A<br>James Croft · Sarah Chen</span>
+          </div>
+          <div class="fst-item">
+            <div class="fst-dot"></div>
+            <span class="fst-date">10.12</span>
+            <span class="fst-event">특별 상영</span>
+            <span class="fst-sub">Special Screening<br>CGV 센텀시티</span>
+          </div>
+          <div class="fst-item">
+            <div class="fst-dot"></div>
+            <span class="fst-date">10.17</span>
+            <span class="fst-event">폐막식</span>
+            <span class="fst-sub">Closing Ceremony<br>영화의전당 하늘연극장</span>
+          </div>
+        </div>
+      </div>
+      <div class="qs-grid">
+        <div class="qs-card" onclick="go('schedule')">
+          <div class="qs-n"></div>
+          <div class="qs-h">SCHEDULE</div>
+          <div class="qs-sub">상영 일정 및 예매</div>
+        </div>
+        <div class="qs-card" onclick="go('ranking')">
+          <div class="qs-n"></div>
+          <div class="qs-h">OFFICIAL SELECTION</div>
+          <div class="qs-sub">전체 초청작 라인업</div>
+        </div>
+        <div class="qs-card" onclick="go('spotlight')">
+          <div class="qs-n"></div>
+          <div class="qs-h">DIRECTOR SPOTLIGHT</div>
+          <div class="qs-sub">초청 감독 인터뷰 및 소개</div>
+        </div>
+        <div class="qs-card" onclick="go('reviews')">
+          <div class="qs-n"></div>
+          <div class="qs-h">AUDIENCE REVIEWS</div>
+          <div class="qs-sub">관객 실시간 리뷰</div>
+        </div>
+        <div class="qs-card" onclick="go('match')">
+          <div class="qs-n"></div>
+          <div class="qs-h">FILM FINDER</div>
+          <div class="qs-sub">맞춤 영화 추천</div>
+        </div>
+        <div class="qs-card" style="background:var(--g1);cursor:default;">
+          <div class="qs-n" style="color:var(--g3)">—</div>
+          <div class="qs-h" style="font-size:.8rem;color:var(--muted);font-weight:300;line-height:1.5;">HAEUNDAE, BUSAN<br>OCT 07 — OCT 17, 2026</div>
+        </div>
+      </div>
     </div>
 
-    <div id="site" style="opacity:0; pointer-events:none; visibility:hidden;">
-        
-        <header id="mainHeader">
-            <div class="logo" onclick="location.reload()">FILM<em>FEST</em> '26</div>
-            <nav>
-                <a href="#schedule">SCHEDULE</a>
-                <a href="#ranking">RANKING</a>
-                <a href="#lineup">LINEUP</a>
-                <button class="login-btn" onclick="openM('loginM')">SIGN IN</button>
-            </nav>
-        </header>
-
-        <div class="hero">
-            <div class="hero-bg"></div>
-            <div class="hero-overlay"></div>
-            <div class="hero-film top" id="hFilmTop"></div>
-            <div class="hero-film bot" id="hFilmBot"></div>
-            <div class="hero-content">
-                <div class="hero-tag">Opening Film · Now Premiering</div>
-                <h1 class="hero-title">INTO THE<br>DARKNESS</h1>
-                <div class="hero-sub">Directed by Junho Kim · 127 mins · Grand Cinema Hall 1</div>
+    <!-- 상영 일정 -->
+    <div class="pg" id="pg-schedule">
+      <div class="pi">
+        <div class="sec-ttl">상영 일정 및 예매</div>
+        <div class="sec-h">일정</div>
+        <div class="sec-rule"></div>
+        <div class="cal-wrap">
+          <div class="cal-box">
+            <div class="cal-head">
+              <button class="cal-nb" onclick="calMove(-1)">←</button>
+              <div class="cal-m" id="calMonth"></div>
+              <button class="cal-nb" onclick="calMove(1)">→</button>
             </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+          <div class="ev-panel">
+            <div class="ev-date" id="evDate">날짜를 선택하세요</div>
+            <div id="evList"></div>
+          </div>
         </div>
-
-        <section id="schedule">
-            <div class="sec-num">01</div>
-            <div class="sec-en">FESTIVAL SCHEDULE</div>
-            <div class="sec-ko">영화제 일정 및 예매</div>
-            <div class="sec-rule"></div>
-            
-            <div class="cal-wrap">
-                <div class="cal-box">
-                    <div class="cal-head">
-                        <button class="cal-nav" onclick="calMove(-1)">←</button>
-                        <div class="cal-month" id="calMonth">OCTOBER 2026</div>
-                        <button class="cal-nav" onclick="calMove(1)">→</button>
-                    </div>
-                    <div class="cal-grid" id="calGrid"></div>
-                </div>
-                <div class="ev-panel">
-                    <div class="ev-date" id="evDate">OCT 07</div>
-                    <div id="evList"></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="ranking">
-            <div class="ranking-head">
-                <div class="sec-num">02</div>
-                <div class="sec-en">REAL-TIME RANKING</div>
-                <div class="sec-ko">관객들이 주목하는 실시간 순위</div>
-            </div>
-            <div class="reel-section">
-                <div class="reel-film-strip" id="rfTop"></div>
-                <div class="carousel-wrap" onmouseenter="stopAuto()" onmouseleave="startAuto()">
-                    <div class="carousel-track-outer">
-                        <div class="carousel-track" id="carTrack"></div>
-                    </div>
-                </div>
-                <div class="carousel-info" id="carInfo" style="text-align:center; padding:2rem; font-family:'Share Tech Mono';"></div>
-                <div class="reel-film-strip" id="rfBot"></div>
-            </div>
-       <section id="lineup">
-    <div class="sec-num">03</div>
-    <div class="sec-en">FILM LINEUP</div>
-    <div class="sec-ko">상영작 리스트</div>
-    <div class="sec-rule"></div>
-
-    <div class="filter-row" id="filterRow"></div>
-
-    <div class="lineup-reel">
-        <div class="reel-film-strip" id="lfTop"></div>
-        <div class="lineup-grid" id="lineupGrid"></div>
-        <div class="reel-film-strip" id="lfBot"></div>
-    </div>
-</section>
-            <div class="filter-row" id="filterRow"></div>
-            
-            <div class="lineup-reel">
-                <div class="reel-film-strip" style="padding:5px 15px;" id="lfTop"></div>
-                <div class="lineup-grid" id="lineupGrid"></div>
-                <div class="reel-film-strip" style="padding:5px 15px;" id="lfBot"></div>
-            </div>
-        </section>
-        <footer>
-            <div class="foot-logo">FILM<em>FEST</em> 2026</div>
-            <div class="foot-info">© 2026 SEOUL INTERNATIONAL FILM FESTIVAL. ALL RIGHTS RESERVED.</div>
-        </footer>
+        <div class="cd-sec">
+          <div class="sec-ttl"></div>
+          <div class="cd-film" id="cdFilm"></div>
+          <div class="cd-timer">
+            <div class="cd-unit"><span class="cd-n" id="cdH">00</span><span class="cd-l">시간</span></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-unit"><span class="cd-n" id="cdM">00</span><span class="cd-l">분</span></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-unit"><span class="cd-n" id="cdS">00</span><span class="cd-l">초</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="nl-bar">
+        <div><div class="nl-h">소식 받아보기</div><div class="nl-sub">상영 일정과 이벤트 정보를 이메일로 받아보세요</div></div>
+        <div class="nl-form"><input class="nl-input" id="nlEmail" type="email" placeholder="이메일 주소"><button class="nl-submit" onclick="nlSub()">구독</button></div>
+      </div>
     </div>
 
-    <div class="overlay" id="loginM">
-        <div class="login-box">
-            <button onclick="closeM('loginM')" style="float:right; color:#666;">✕</button>
-            <h2>SIGN IN</h2>
-            <div class="input-group">
-                <label>IDENTIFICATION / EMAIL</label>
-                <input type="text" placeholder="ID를 입력하세요">
-            </div>
-            <div class="input-group">
-                <label>ACCESS KEY / PASSWORD</label>
-                <input type="password" placeholder="비밀번호를 입력하세요">
-            </div>
-            <button class="pay-btn" onclick="alert('로그인 서비스 점검 중입니다.'); closeM('loginM');">CONTINUE</button>
-        </div>
+    <!-- 상영작 -->
+    <div class="pg" id="pg-ranking">
+      <div class="pi" style="padding-bottom:1.5rem;">
+        <div class="sec-ttl">인기 순위</div>
+        <div class="sec-h">순위</div>
+      </div>
+      <div class="rank-scroll"><div class="rank-track" id="rankTrack"></div></div>
+      <div class="pi" style="padding-top:3.5rem;padding-bottom:1.5rem;">
+        <div class="sec-ttl">전체 상영작</div>
+        <div class="sec-h">상영작</div>
+        <div class="sec-rule"></div>
+        <div class="filter-row" id="filterRow"></div>
+      </div>
+      <div class="lc-grid" id="lineupGrid"></div>
+      <div class="pg-footer"><div class="pg-foot-l">TIDAL FILM FESTIVAL 2026</div><div class="pg-foot-r">© 2026 TIDAL FILM FESTIVAL</div></div>
     </div>
 
-   <div class="overlay" id="bkM">
-    <div class="bk-box" style="position:relative;">
-
-        <button id="bkBackBtn"
-        onclick="bkBack()"
-        style="position:absolute; top:20px; left:20px; z-index:9999; font-size:1.5rem; color:#666; display:none;">
-        ←
-        </button>
-
-        <button onclick="closeM('bkM')"
-        style="position:absolute; top:20px; right:20px; z-index:9999; font-size:1.5rem; color:#666;">
-        ✕
-        </button>
-
-        <div class="bk-step on" id="bkStep1">
-            <div class="bk-body" style="padding:4rem; text-align:center;">
-                <h2>예매 안내</h2>
-                <p style="margin:2rem 0;">좌석을 선택해주세요.</p>
-                <button class="pay-btn" onclick="bkGo(2)">SELECT SEATS</button>
+    <!-- 감독 소개 -->
+    <div class="pg" id="pg-spotlight">
+      <div style="position:relative;padding-top:56px;">
+        <button class="spot-side l" onclick="spotMove(-1)">←</button>
+        <button class="spot-side r" onclick="spotMove(1)">→</button>
+        <div class="spot-wrap" id="spotWrap">
+          <div class="spot-img"><img id="spotImg" src="" alt=""></div>
+          <div class="spot-body">
+            <div class="spot-tag">초청 감독</div>
+            <div class="spot-name" id="spotName"></div>
+            <div class="spot-nat" id="spotNat"></div>
+            <div class="spot-quote" id="spotQuote"></div>
+            <div class="spot-films" id="spotFilms"></div>
+            <div class="spot-navs">
+              <button class="btn box" id="spotFilmoBtn">필모그래피</button>
             </div>
+          </div>
         </div>
-                    <div style="font-family:'Share Tech Mono'; color:var(--red); margin-bottom:1rem;">[NOTICE]</div>
-                    <p style="font-size:0.85rem; color:#888; line-height:1.6; margin-bottom:2.5rem;">
-                        본 상영 회차는 감독과의 대화(GV)가 예정되어 있습니다. 상영 종료 후 약 30분간 진행됩니다.
-                    </p>
-                    <button class="pay-btn" onclick="bkGo(2)">SELECT SEATS</button>
-                </div>
-            </div>
-            <div class="bk-step" id="bkStep2">
-                <div class="bk-body">
-                    <div class="screen-bar"></div>
-                    <div style="text-align:center; font-family:'Share Tech Mono'; font-size:0.6rem; color:#444; margin-bottom:2rem; letter-spacing:0.5em;">SCREEN</div>
-                    <div class="seat-grid" id="seatGrid"></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:3rem; padding-top:2rem; border-top:1px solid #222;">
-                        <div style="font-family:'Share Tech Mono';">
-                            <span style="color:#555; font-size:0.7rem;">SELECTED SEATS</span>
-                            <div id="selSeatsDisplay" style="font-size:1.2rem; color:var(--red); margin-top:5px;">NONE</div>
-                        </div>
-                        <button class="pay-btn" id="payBtn" disabled onclick="bkGo(3)" style="width:200px; margin-top:0;">PAY NOW</button>
-                    </div>
-                </div>
-            </div>
-            <div class="bk-step" id="bkStep3">
-                <div class="bk-body" style="text-align:center; padding:5rem 0;">
-                    <div style="width:80px; height:80px; border-radius:50%; border:2px solid var(--red); display:flex; align-items:center; justify-content:center; margin:0 auto 2rem; color:var(--red); font-size:2rem;">✓</div>
-                    <h2 style="font-family:'Bebas Neue'; font-size:2.5rem; letter-spacing:0.1em;">BOOKING COMPLETE</h2>
-                    <p style="font-family:'Share Tech Mono'; color:#666; margin-top:1rem;">Your ticket has been sent to your registered email.</p>
-                    <div id="succCode" style="margin-top:2.5rem; font-family:'Share Tech Mono'; background:#000; padding:1.5rem; color:var(--red); font-size:1.2rem; letter-spacing:0.2em;"></div>
-                    <button class="pay-btn" onclick="closeM('bkM')" style="width:200px; margin-top:3rem;">CLOSE</button>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <script>
-    
-        /* ══════════════════════════════
-            DATABASE
-        ══════════════════════════════ */
-        const FILMS = [
-            {id:1, title:'어둠 속으로 (Into the Darkness)', dir:'김준호', genre:'스릴러', date:'10월 07일', time:'19:00', venue:'그랜드 1관', runtime:'127분', score:'9.2', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600&q=80'},
-            {id:2, title:'빛의 회랑 (Corridor of Light)', dir:'마리 블랑', genre:'드라마', date:'10월 08일', time:'15:30', venue:'스튜디오 A', runtime:'110분', score:'9.7', stars:'★★★★★', img:'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=600&q=80'},
-            {id:3, title:'되감기 (Rewind)', dir:'박수연', genre:'애니메이션', date:'10월 09일', time:'13:00', venue:'스튜디오 B', runtime:'98분', score:'8.9', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=600&q=80'},
-            {id:4, title:'목격자 (The Witness)', dir:'알렌 코바치', genre:'다큐멘터리', date:'10월 10일', time:'18:00', venue:'홀 3', runtime:'89분', score:'8.7', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=600&q=80'},
-            {id:5, title:'하얀 밤 (White Night)', dir:'이지영', genre:'드라마', date:'10월 11일', time:'20:30', venue:'그랜드 2관', runtime:'134분', score:'7.8', stars:'★★★☆☆', img:'https://images.unsplash.com/photo-1525373698358-041e3a460346?w=600&q=80'},
-            {id:6, title:'메아리 (Echo)', dir:'타나카 류', genre:'스릴러', date:'10월 12일', time:'16:00', venue:'스튜디오 A', runtime:'112분', score:'8.4', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=600&q=80'},
-            {id:7, title:'숨겨진 꽃 (Hidden Flower)', dir:'사라 첸', genre:'드라마', date:'10월 13일', time:'14:00', venue:'홀 1', runtime:'105분', score:'9.5', stars:'★★★★★', img:'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&q=80'},
-            {id:8, title:'유리 도시 (Glass City)', dir:'오마르 하산', genre:'애니메이션', date:'10월 14일', time:'17:30', venue:'스튜디오 B', runtime:'93분', score:'8.6', stars:'★★★★☆', img:'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80'},
-        ];
-
-        const CAL_EVENTS = {
-            7: [{time:'19:00', venue:'그랜드 1관', title:'어둠 속으로', id:1}],
-            8: [{time:'15:30', venue:'스튜디오 A', title:'빛의 회랑', id:2}],
-            9: [{time:'13:00', venue:'스튜디오 B', title:'되감기', id:3}],
-            10: [{time:'18:00', venue:'홀 3', title:'목격자', id:4}],
-            11: [{time:'20:30', venue:'그랜드 2관', title:'하얀 밤', id:5}],
-            12: [{time:'16:00', venue:'스튜디오 A', title:'메아리', id:6}],
-            13: [{time:'14:00', venue:'홀 1', title:'숨겨진 꽃', id:7}],
-            14: [{time:'17:30', venue:'스튜디오 B', title:'유리 도시', id:8}]
-        };
-
-        /* ══════════════════════════════
-            INTRO & NAVIGATION LOGIC
-        ══════════════════════════════ */
-        let zoomVal = 1;
-        const zoomImg = document.getElementById('zoomImg');
-        const introTitle = document.getElementById('introTitle');
-        const exploreBtn = document.getElementById('exploreBtn');
-
-       window.addEventListener('wheel', (e) => {
-    zoomVal += e.deltaY * 0.008;
-    zoomVal = Math.min(Math.max(1, zoomVal), 15);
-
-    zoomImg.style.transform = `scale(${zoomVal})`;
-    introTitle.style.opacity = 1 - (zoomVal - 1) / 4;
-    introTitle.style.transform = `translateY(${(zoomVal - 1) * -20}px)`;
-
-    if (zoomVal >= 9) exploreBtn.classList.add('visible');
-    else exploreBtn.classList.remove('visible');
-}, { passive: false });
-
-        /* ══════════════════════════════
-            CORE FUNCTIONS
-        ══════════════════════════════ */
-        function initSite() {
-            ['hFilmTop','hFilmBot','rfTop','rfBot','lfTop','lfBot'].forEach(id => fillHoles(id, 50));
-            buildCal();
-            selectDay(7);
-            buildCarousel();
-            buildFilters();
-            buildLineup('전체');
-            startAuto(); // Start ranking autoplay
-        }
-
-        function fillHoles(id, count) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.innerHTML = Array(count).fill('<div class="hfh"></div>').join('');
-        }
-
-        function buildCal() {
-            const grid = document.getElementById('calGrid');
-            grid.innerHTML = '';
-            ["S","M","T","W","T","F","S"].forEach(d => grid.innerHTML += `<div class="cal-dname">${d}</div>`);
-            const daysInOct = 31;
-            const startOffset = 4;
-            for(let i=0; i<startOffset; i++) grid.innerHTML += `<div class="cal-cell empty"></div>`;
-            for(let d=1; d<=daysInOct; d++) {
-                const isEvent = CAL_EVENTS[d];
-                const active = d === selDay ? 'act' : '';
-                grid.innerHTML += `<div class="cal-cell ${isEvent?'ev':''} ${active}" onclick="${isEvent?`selectDay(${d})`:'' }">${d}</div>`;
-            }
-        }
-
-        let selDay = 7;
-        function selectDay(d) {
-            selDay = d;
-            buildCal();
-            const list = document.getElementById('evList');
-            document.getElementById('evDate').textContent = `OCT ${String(d).padStart(2,'0')}`;
-            const events = CAL_EVENTS[d] || [];
-            list.innerHTML = events.length ? events.map(ev => `
-                <div class="ev-item">
-                    <div class="ev-time">${ev.time}</div>
-                    <div class="ev-info">
-                        <div class="ev-title">${ev.title}</div>
-                        <div class="ev-meta">${ev.venue} · Dolby 7.1</div>
-                    </div>
-                    <button class="ev-book" onclick="openBk(${ev.id})">BOOK</button>
-                </div>
-            `).join('') : `<p style="color:#333; font-size:0.8rem; margin-top:20px;">No screenings scheduled for this date.</p>`;
-        }
-
-        // Ranking Carousel (Autoplay)
-        const ranked = [...FILMS].sort((a,b) => b.score - a.score);
-
-function buildCarousel() {
-    const track = document.getElementById('carTrack');
-
-    const cards = ranked.map((f, i) => `
-        <div class="c-card" onclick="openBk(${f.id})">
-            <div class="c-rank">${i+1}</div>
-            <div class="c-poster"><img src="${f.img}"></div>
-            <div class="c-info" style="opacity:1;">
-                <div class="c-title">${f.title}</div>
-                <div class="c-score">${f.stars} ${f.score}</div>
-            </div>
+    <!-- 관객 리뷰 -->
+    <div class="pg" id="pg-reviews">
+      <div class="pi">
+        <div class="sec-ttl">관람 후 남기는 이야기</div>
+        <div class="sec-h">관객 리뷰</div>
+        <div class="sec-rule"></div>
+        <div class="rw-box">
+          <div class="rw-title">리뷰 쓰기</div>
+          <div class="rw-sub">관람하신 작품에 대한 솔직한 감상을 남겨주세요</div>
+          <select class="rw-f" id="rwFilm" style="margin-bottom:.9rem"><option value="">작품 선택</option></select>
+          <div class="star-row" id="starRow"></div>
+          <input class="rw-f" id="rwName" placeholder="닉네임 (선택)">
+          <textarea class="rw-f" id="rwText" placeholder="감상을 적어주세요..."></textarea>
+          <div style="margin-top:1rem"><button class="btn box" onclick="submitRev()">등록</button></div>
         </div>
-    `).join('');
-
-    track.innerHTML = cards + cards; // 두 번 복제해서 무한루프처럼
-}
-
-        function openM(id) {
-            document.getElementById(id).classList.add('open');
-            document.body.classList.remove('no-scroll');
-        }
-
-        function closeM(id) {
-    document.getElementById(id).classList.remove('open');
-    document.body.classList.remove('no-scroll');
-}
-
-        let selectedSeats = [];
-        function openBk(id) {
-            const f = FILMS.find(x => x.id === id);
-            document.getElementById('bkImg').src = f.img;
-            document.getElementById('bkTitle').textContent = f.title;
-            document.getElementById('bkDateMeta').textContent = `${f.date} · ${f.time}`;
-            selectedSeats = [];
-            document.getElementById('selSeatsDisplay').textContent = "NONE";
-            document.getElementById('payBtn').disabled = true;
-            buildSeats();
-            bkGo(1);
-            openM('bkM');
-        }
-
-        function buildSeats() {
-            const grid = document.getElementById('seatGrid');
-            grid.innerHTML = '';
-            for(let i=1; i<=60; i++) {
-                const isTaken = Math.random() < 0.2;
-                grid.innerHTML += `<div class="seat ${isTaken?'taken':''}" onclick="toggleSeat(this, ${i})">${i}</div>`;
-            }
-        }
-
-        function toggleSeat(el, num) {
-            if(el.classList.contains('taken')) return;
-            el.classList.toggle('sel');
-            if(el.classList.contains('sel')) selectedSeats.push(num);
-            else selectedSeats = selectedSeats.filter(s => s !== num);
-            document.getElementById('selSeatsDisplay').textContent = selectedSeats.length ? selectedSeats.sort((a,b)=>a-b).join(', ') : "NONE";
-            document.getElementById('payBtn').disabled = selectedSeats.length === 0;
-        }
-
-        function bkGo(n) {
-            document.querySelectorAll('.bk-step').forEach((s, i) => s.classList.toggle('on', i === n-1));
-            if(n === 3) {
-                const code = 'SIFF26-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                document.getElementById('succCode').textContent = code;
-            }
-        }
-   const GENRES = ['전체','드라마','스릴러','애니메이션','액션'];
-
-function buildFilters(){
-    const row = document.getElementById('filterRow');
-
-    row.innerHTML = GENRES.map(g => `
-        <button class="f-btn ${g==='전체' ? 'on' : ''}" 
-        onclick="filterLineup('${g}',this)">
-        ${g}
-        </button>
-    `).join('');
-}
-
-function filterLineup(genre,btn){
-    document.querySelectorAll('.f-btn').forEach(b=>{
-        b.classList.remove('on');
-    });
-
-    btn.classList.add('on');
-    buildLineup(genre);
-}
-
-function buildLineup(genre='전체'){
-    const grid = document.getElementById('lineupGrid');
-
-    const list = genre === '전체'
-        ? FILMS
-        : FILMS.filter(f => f.genre === genre);
-
-    grid.innerHTML = list.map(f => `
-        <div class="lineup-card" onclick="openBk(${f.id})">
-            <img src="${f.img}">
-            <div class="lc-info">
-                <div class="lc-genre">${f.genre}</div>
-                <div class="lc-title">${f.title}</div>
-                <div class="lc-meta">${f.date} · ${f.time}</div>
-            </div>
+        <div style="border-top:1px solid var(--g1);padding-top:2.5rem;">
+          <div style="font-family:var(--kr);font-weight:200;font-size:.82rem;color:var(--muted);margin-bottom:1.5rem;letter-spacing:.06em;">등록된 리뷰</div>
+          <div class="rev-grid" id="revGrid"></div>
         </div>
-    `).join('');
+      </div>
+    </div>
 
-    fillHoles('lfTop',50);
-    fillHoles('lfBot',50);
-}
+    <!-- 영화 추천 -->
+    <div class="pg" id="pg-match">
+      <div class="pi" style="display:flex;flex-direction:column;align-items:center;">
+        <div style="width:100%;max-width:540px;">
+          <div class="sec-ttl">취향에 맞는 영화 찾기</div>
+          <div class="sec-h">영화 추천</div>
+          <div class="sec-rule"></div>
+        </div>
+        <div class="match-box">
+          <div class="m-prog"><div class="m-prog-bar" id="mProgBar"></div></div>
+          <div class="ms on" id="ms1">
+            <div class="mq-n">Q1 · 지금 이 순간</div>
+            <div class="mq">지금 어떤 감정을 느끼고 싶으신가요?</div>
+            <div class="mopts">
+              <button class="mopt" onclick="mAns(1,0)">지쳐있어요. 위로가 필요해요.</button>
+              <button class="mopt" onclick="mAns(1,1)">두근거리는 긴장감을 원해요.</button>
+              <button class="mopt" onclick="mAns(1,2)">세상을 다른 눈으로 보고 싶어요.</button>
+              <button class="mopt" onclick="mAns(1,3)">현실을 잠깐 잊고 싶어요.</button>
+              <button class="mopt" onclick="mAns(1,4)">오래 생각할 이야기를 원해요.</button>
+              <button class="mopt" onclick="mAns(1,5)">같이 보기 좋은 걸 찾고 있어요.</button>
+            </div>
+          </div>
+          <div class="ms" id="ms2">
+            <div class="mq-n">Q2 · 관람 방식</div>
+            <div class="mq">어떻게 보고 싶으신가요?</div>
+            <div class="mopts">
+              <button class="mopt" onclick="mAns(2,'alone')">혼자 조용히</button>
+              <button class="mopt" onclick="mAns(2,'together')">누군가와 함께</button>
+              <button class="mopt" onclick="mAns(2,'any')">상관없어요</button>
+            </div>
+          </div>
+          <div class="ms" id="ms3">
+            <div class="mq-n">Q3 · 시간</div>
+            <div class="mq">얼마나 볼 수 있나요?</div>
+            <div class="mopts">
+              <button class="mopt" onclick="mAns(3,'short')">90분 이내</button>
+              <button class="mopt" onclick="mAns(3,'mid')">한 시간 반 정도</button>
+              <button class="mopt" onclick="mAns(3,'long')">2시간 이상도 괜찮아요</button>
+            </div>
+          </div>
+          <div class="ms" id="ms4">
+            <div class="mq-n">Q4 · 분위기</div>
+            <div class="mq">선호하는 화면 분위기는?</div>
+            <div class="mopts">
+              <button class="mopt" onclick="mAns(4,'dark')">어둡고 무거운 느낌</button>
+              <button class="mopt" onclick="mAns(4,'bright')">따뜻하고 부드러운 느낌</button>
+              <button class="mopt" onclick="mAns(4,'vivid')">강렬하고 역동적인 느낌</button>
+              <button class="mopt" onclick="mAns(4,'real')">날 것 그대로의 현실감</button>
+            </div>
+          </div>
+          <div class="ms" id="ms5">
+            <div class="mq-n">Q5 · 마지막</div>
+            <div class="mq">영화가 끝난 후 어떤 기분이면 좋겠어요?</div>
+            <div class="mopts">
+              <button class="mopt" onclick="mAns(5,'moved')">깊이 울린 감동</button>
+              <button class="mopt" onclick="mAns(5,'excited')">심장이 두근거리는 여운</button>
+              <button class="mopt" onclick="mAns(5,'think')">생각할 거리가 많은 여운</button>
+              <button class="mopt" onclick="mAns(5,'happy')">기분 좋게 나설 수 있는 엔딩</button>
+            </div>
+          </div>
+          <div class="ms" id="msR" style="text-align:center">
+            <div style="font-family:var(--kr);font-weight:200;font-size:.78rem;color:var(--red);margin-bottom:1.5rem;letter-spacing:.1em;">추천 작품</div>
+            <div id="matchCard"></div>
+            <div style="margin-top:2rem;display:flex;gap:.8rem;justify-content:center;">
+              <button class="btn box fill" id="matchBkBtn">예매하기</button>
+              <button class="btn box" onclick="resetMatch()">다시 추천받기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-buildFilters();
-buildLineup();
-document.body.classList.remove('no-scroll');
-  window.onload = function(){
-    document.body.classList.remove('no-scroll');
+  </div>
+</div>
+
+<!-- 영화 정보 모달 -->
+<div class="ov" id="filmM">
+  <div class="mbox film-mbox">
+    <button class="mclose" onclick="closeM('filmM')">✕</button>
+    <div class="fm-wrap">
+      <div class="fm-poster"><img id="fmImg" src="" alt=""></div>
+      <div class="fm-body">
+        <div class="fm-genre" id="fmGenre"></div>
+        <div class="fm-title" id="fmTitle"></div>
+        <div class="fm-dir"   id="fmDir"></div>
+        <div class="fm-det">상영 일시 <span id="fmDate"></span></div>
+        <div class="fm-det">상영관 <span id="fmVenue"></span></div>
+        <div class="fm-det">러닝타임 <span id="fmRuntime"></span></div>
+        <div class="fm-stars" id="fmStars"></div>
+        <div class="fm-acts">
+          <button class="btn box fill" id="fmBkBtn">예매하기</button>
+          <button class="btn" onclick="closeM('filmM')">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 예매 모달 -->
+<div class="ov" id="bkM">
+  <div class="mbox bk-mbox">
+    <button class="mclose" onclick="closeM('bkM')">✕</button>
+    <button id="bkBackBtn" class="mbk hidden" onclick="bkBack()">←</button>
+    <div class="bk-hdr">
+      <div class="bk-poster"><img id="bkImg" src="" alt=""></div>
+      <div class="bk-meta"><h3 id="bkTitle"></h3><p id="bkDate"></p><p id="bkVenue"></p></div>
+    </div>
+    <div class="bk-step on" id="bks1">
+      <div class="bk-body">
+        <div class="bk-step-n"></div><div class="bk-rule"></div>
+        <div class="time-grid" id="timeGrid"></div>
+      </div>
+    </div>
+    <div class="bk-step" id="bks2">
+      <div class="bk-body">
+        <div class="bk-step-n">02 · 좌석 선택</div><div class="bk-rule"></div>
+        <div class="screen-bar"></div><div class="screen-lbl">스 크 린</div>
+        <div class="seat-grid" id="seatGrid"></div>
+        <div class="seat-sum">
+          <div><div class="seat-sum-l">선택 좌석</div><div class="seat-sum-v" id="selSeatsTxt">없음</div></div>
+          <button class="btn box fill" id="payBtn" disabled onclick="bkGo(3)">예약 확정</button>
+        </div>
+      </div>
+    </div>
+    <div class="bk-step" id="bks3">
+      <div class="succ-wrap">
+        <div class="succ-ring">✓</div>
+        <div class="succ-t">예약 완료</div>
+        <div class="succ-desc">현장 매표소에서 예약 번호를 제시하고<br>티켓 수령 후 현장 결제해 주세요.</div>
+        <div class="succ-code" id="succCode"></div>
+        <button class="btn box" style="margin-top:1.8rem;" onclick="closeM('bkM')">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 필모그래피 모달 -->
+<div class="ov" id="filmoM">
+  <div class="mbox filmo-mbox">
+    <button class="mclose" onclick="closeM('filmoM')">✕</button>
+    <div style="padding:2.5rem;">
+      <div style="font-family:var(--kr);font-weight:200;font-size:.78rem;color:var(--red);margin-bottom:.5rem;letter-spacing:.1em;">필모그래피</div>
+      <div style="font-family:var(--kr);font-weight:700;font-size:1.3rem;margin-bottom:.2rem;letter-spacing:.02em;" id="filmoName"></div>
+      <div style="font-family:var(--kr);font-weight:200;font-size:.8rem;color:var(--muted);margin-bottom:2rem;" id="filmoNat"></div>
+      <div class="filmo-grid" id="filmoGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── 데이터 ─── */
+const FILMS=[
+  {id:1, title:'Into the Dark',    dir:'James Croft',  genre:'스릴러',     date:'10월 07일',time:'19:00',venue:'영화의전당 하늘연극장',  runtime:'127분',score:9.2,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600&q=80'},
+  {id:2, title:'빛의 회랑',        dir:'Marie Blanc',genre:'드라마',  date:'10월 08일',time:'15:30',venue:'CGV 센텀시티',           runtime:'110분',score:9.7,stars:'★★★★★',img:'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=600&q=80'},
+  {id:3, title:'되감기',           dir:'Soo Park',  genre:'애니메이션', date:'10월 09일',time:'13:00',venue:'메가박스 해운대',        runtime:'98분', score:8.9,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=600&q=80'},
+  {id:4, title:'증언',             dir:'Alen Kovač',genre:'다큐멘터리',date:'10월 10일',time:'18:00',venue:'부산시민회관 대강당', runtime:'89분', score:8.7,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=600&q=80'},
+  {id:5, title:'하얀 밤',          dir:'Elena Park',  genre:'드라마',     date:'10월 11일',time:'20:30',venue:'영화의전당 소극장',     runtime:'134분',score:7.8,stars:'★★★☆☆',img:'https://images.unsplash.com/photo-1525373698358-041e3a460346?w=600&q=80'},
+  {id:6, title:'메아리',           dir:'Ryu Tanaka',genre:'스릴러',    date:'10월 12일',time:'16:00',venue:'CGV 센텀시티',          runtime:'112분',score:8.4,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=600&q=80'},
+  {id:7, title:'숨겨진 꽃',        dir:'Sarah Chen',genre:'드라마',  date:'10월 13일',time:'14:00',venue:'메가박스 해운대',        runtime:'105분',score:9.5,stars:'★★★★★',img:'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&q=80'},
+  {id:8, title:'유리 도시',        dir:'Omar Hassan',genre:'애니메이션',date:'10월 14일',time:'17:30',venue:'부산시민회관 대강당',runtime:'93분', score:8.6,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80'},
+  {id:9, title:'붉은 지평선',      dir:'Min Choi',  genre:'액션',       date:'10월 08일',time:'21:00',venue:'영화의전당 하늘연극장', runtime:'118분',score:8.1,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1533488765986-dfa2a9939acd?w=600&q=80'},
+  {id:10,title:'안개 속 남자',     dir:'Lena Müller',genre:'스릴러', date:'10월 09일',time:'20:00',venue:'CGV 센텀시티',           runtime:'101분',score:8.3,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&q=80'},
+  {id:11,title:'마지막 여름',      dir:'Ha Jung',  genre:'드라마',     date:'10월 10일',time:'14:30',venue:'메가박스 해운대',        runtime:'122분',score:9.0,stars:'★★★★★',img:'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80'},
+  {id:12,title:'심해',             dir:'Ikaika Kahana',genre:'다큐멘터리',date:'10월 11일',time:'11:00',venue:'부산시민회관 대강당',runtime:'88분',score:8.5,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&q=80'},
+  {id:13,title:'환영의 거리',      dir:'Natasha Ivanova',genre:'스릴러',date:'10월 12일',time:'19:30',venue:'영화의전당 소극장', runtime:'109분',score:7.9,stars:'★★★☆☆',img:'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80'},
+  {id:14,title:'강',               dir:'Seo Yoon',  genre:'드라마',     date:'10월 13일',time:'17:00',venue:'메가박스 해운대',        runtime:'115분',score:8.8,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=600&q=80'},
+  {id:15,title:'철의 새벽',        dir:'Caleb Okoi',genre:'액션',    date:'10월 14일',time:'20:00',venue:'영화의전당 하늘연극장', runtime:'132분',score:8.2,stars:'★★★★☆',img:'https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=600&q=80'},
+  {id:16,title:'기억의 조각들',    dir:'Mina Jang',  genre:'애니메이션', date:'10월 07일',time:'15:00',venue:'CGV 센텀시티',           runtime:'96분', score:9.1,stars:'★★★★★',img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&q=80'},
+];
+const CAL={
+  7:[{time:'15:00',venue:'CGV 센텀시티',title:'기억의 조각들',id:16},{time:'19:00',venue:'영화의전당',title:'어둠 속으로',id:1}],
+  8:[{time:'15:30',venue:'CGV 센텀시티',title:'빛의 회랑',id:2},{time:'21:00',venue:'영화의전당',title:'붉은 지평선',id:9}],
+  9:[{time:'13:00',venue:'메가박스 해운대',title:'되감기',id:3},{time:'20:00',venue:'CGV 센텀시티',title:'안개 속 남자',id:10}],
+  10:[{time:'14:30',venue:'메가박스 해운대',title:'마지막 여름',id:11},{time:'18:00',venue:'부산시민회관',title:'증언',id:4}],
+  11:[{time:'11:00',venue:'부산시민회관',title:'심해',id:12},{time:'20:30',venue:'영화의전당 소극장',title:'하얀 밤',id:5}],
+  12:[{time:'16:00',venue:'CGV 센텀시티',title:'메아리',id:6},{time:'19:30',venue:'영화의전당 소극장',title:'환영의 거리',id:13}],
+  13:[{time:'14:00',venue:'메가박스 해운대',title:'숨겨진 꽃',id:7},{time:'17:00',venue:'메가박스 해운대',title:'강',id:14}],
+  14:[{time:'17:30',venue:'부산시민회관',title:'유리 도시',id:8},{time:'20:00',venue:'영화의전당',title:'철의 새벽',id:15}],
 };
-function startFestival() {
-    const zoom = document.getElementById('zoomWrapper');
-    const site = document.getElementById('site');
+const DIRECTORS=[
+  {name:'James Croft',nat:'영국',role:'어둠 속으로',quote:'영화는 어둠 속에서 빛을 찾는 작업이다. 나는 매 장면에서 관객이 숨을 멈추는 순간을 만들려 한다.',films:['Into the Dark','Seoul Night','Boundary'],img:'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=700&q=85'},
+  {name:'Marie Blanc',nat:'프랑스',role:'빛의 회랑',quote:'Je fais des films pour comprendre pourquoi je vis. Chaque plan est une question sans réponse.',films:['빛의 회랑','파리의 아침','침묵'],img:'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=700&q=85'},
+  {name:'Sarah Chen',nat:'미국 / 중국',role:'숨겨진 꽃',quote:'I want the audience to dream with me, not just watch.',films:['숨겨진 꽃','달빛','유리창'],img:'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=700&q=85'},
+  {name:'Elena Park',nat:'미국',role:'하얀 밤',quote:'영화는 지금 세계에 말을 걸고 있다. 나도 그 목소리 중 하나가 되고 싶다.',films:['하얀 밤','Winter River','Memory'],img:'https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?w=700&q=85'},
+];
+const REVIEWS=[
+  {film:'빛의 회랑',author:'관객 민지',stars:5,text:'올해 본 영화 중 가장 인상 깊었습니다. 마지막 장면에서 눈물이 났어요.'},
+  {film:'어둠 속으로',author:'cinebuff',stars:4,text:'박준서 감독 특유의 긴장감이 처음부터 끝까지 유지됩니다.'},
+  {film:'숨겨진 꽃',author:'정원',stars:5,text:'Sarah Chen 감독의 섬세한 시선이 느껴지는 작품이었어요.'},
+  {film:'기억의 조각들',author:'애니팬',stars:5,text:'색채 사용이 정말 독창적이고 이야기도 감동적이었습니다.'},
+  {film:'증언',author:'다큐마니아',stars:4,text:'다큐멘터리인데 극영화보다 더 극적입니다.'},
+  {film:'마지막 여름',author:'드라마팬',stars:5,text:'한국의 여름을 이렇게 아름답게 담은 영화는 처음이에요.'},
+];
+const GENRES=['전체','드라마','스릴러','애니메이션','액션','다큐멘터리'];
+const MATCH_MOODS=[
+  {label:'지쳐있어요. 위로가 필요해요.',genres:['드라마'],mood:0},
+  {label:'두근거리는 긴장감을 원해요.',genres:['스릴러','액션'],mood:1},
+  {label:'세상을 다른 눈으로 보고 싶어요.',genres:['다큐멘터리'],mood:2},
+  {label:'현실을 잠깐 잊고 싶어요.',genres:['애니메이션'],mood:3},
+  {label:'오래 생각할 이야기를 원해요.',genres:['드라마','다큐멘터리'],mood:4},
+  {label:'같이 보기 좋은 걸 찾고 있어요.',genres:['드라마','애니메이션'],mood:5},
+];
+const PAGES=['home','schedule','ranking','spotlight','reviews','match'];
+const KMN=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 
-    zoom.style.opacity = '0';
-    zoom.style.visibility = 'hidden';
-    zoom.style.pointerEvents = 'none';
-
-    site.style.opacity = '1';
-    site.style.visibility = 'visible';
-    site.style.pointerEvents = 'auto';
-
-    initSite();
-    document.body.classList.remove('no-scroll');
+/* ── 인트로 ── */
+let zv=1;
+window.addEventListener('wheel',e=>{
+  if(document.getElementById('intro').classList.contains('hidden'))return;
+  e.preventDefault();
+  zv=Math.min(Math.max(1,zv+e.deltaY*.022),15);
+  applyZoom();
+},{passive:false});
+let ty=0;
+window.addEventListener('touchstart',e=>{ty=e.touches[0].clientY;},{passive:true});
+window.addEventListener('touchmove',e=>{
+  if(document.getElementById('intro').classList.contains('hidden'))return;
+  const dy=ty-e.touches[0].clientY;ty=e.touches[0].clientY;
+  zv=Math.min(Math.max(1,zv+dy*.04),15);applyZoom();
+},{passive:true});
+function applyZoom(){
+  document.getElementById('zoomBox').style.transform=`scale(${zv})`;
+  const t=document.getElementById('introTitle');
+  t.style.opacity=Math.max(0,1-(zv-1)/3);
+  t.style.transform=`translateY(${(zv-1)*-14}px)`;
+  document.getElementById('scrollHint').style.opacity=Math.max(0,1-(zv-1)/2);
+  if(zv>=3)document.getElementById('enterBtn').classList.add('show');
+  else document.getElementById('enterBtn').classList.remove('show');
 }
- function forceUnlockScroll(){
-    document.body.classList.remove('no-scroll');
-    document.documentElement.style.overflow = 'auto';
-    document.body.style.overflow = 'auto';
-    document.body.style.height = 'auto';
+function enterSite(){
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('site').classList.add('show');
+  init();
+}
+function goIntro(){
+  document.getElementById('site').classList.remove('show');
+  document.getElementById('intro').classList.remove('hidden');
+  zv=1;
+  document.getElementById('zoomBox').style.transform='scale(1)';
+  document.getElementById('introTitle').style.opacity='1';
+  document.getElementById('introTitle').style.transform='';
+  document.getElementById('enterBtn').classList.remove('show');
+  document.getElementById('scrollHint').style.opacity='1';
 }
 
-forceUnlockScroll();
-function startFestival() {
-    const zoom = document.getElementById('zoomWrapper');
-    const site = document.getElementById('site');
-
-    zoom.style.opacity = '0';
-    zoom.style.visibility = 'hidden';
-
-    site.style.opacity = '1';
-    site.style.visibility = 'visible';
-    site.style.pointerEvents = 'auto';
-
-    document.body.classList.remove('no-scroll');
-    initSite();
+/* ── 페이지 이동 ── */
+function go(name){
+  PAGES.forEach(p=>{
+    document.getElementById('pg-'+p).classList.toggle('on',p===name);
+    const nb=document.getElementById('nb-'+p);
+    if(nb)nb.classList.toggle('on',p===name);
+  });
+  document.getElementById('pg-'+name).scrollTop=0;
 }
- </script>
+
+/* ── 초기화 ── */
+function init(){
+
+  buildCal();selectDay(7);
+  buildRank();
+  buildFilters();buildLineup('전체');
+  buildSpotlight();
+  buildRevs();buildRevFilmSel();buildStars();
+  buildCountdown();
+}
+
+/* ── 캘린더 ── */
+let cy=2026,cm=10,sd=7;
+function buildCal(){
+  document.getElementById('calMonth').textContent=`${cy}년 ${KMN[cm-1]}`;
+  const g=document.getElementById('calGrid');g.innerHTML='';
+  ['일','월','화','수','목','금','토'].forEach(d=>g.innerHTML+=`<div class="cal-dn">${d}</div>`);
+  const first=new Date(cy,cm-1,1).getDay(),days=new Date(cy,cm,0).getDate();
+  for(let i=0;i<first;i++)g.innerHTML+=`<div class="cal-cell"></div>`;
+  for(let d=1;d<=days;d++){
+    const ev=cm===10&&cy===2026&&CAL[d];
+    g.innerHTML+=`<div class="cal-cell${ev?' has':''}${d===sd&&cm===10&&cy===2026?' sel':''}" ${ev?`onclick="selectDay(${d})"`:''}>${d}</div>`;
+  }
+}
+function selectDay(d){
+  sd=d;buildCal();
+  document.getElementById('evDate').textContent=`${cm}월 ${d}일`;
+  const evs=(cm===10&&cy===2026)?CAL[d]||[]:[];
+  document.getElementById('evList').innerHTML=evs.length
+    ?evs.map(e=>`<div class="ev-row"><div class="ev-time">${e.time}</div><div class="ev-info"><div class="ev-title">${e.title}</div><div class="ev-venue">${e.venue}</div></div><button class="btn box sm" onclick="openBk(${e.id})">예매</button></div>`).join('')
+    :`<div class="no-ev">상영 일정이 없습니다</div>`;
+}
+function calMove(d){
+  cm+=d;if(cm>12){cm=1;cy++;}if(cm<1){cm=12;cy--;}
+  buildCal();
+  document.getElementById('evDate').textContent=`${cm}월 ${cy}년`;
+  document.getElementById('evList').innerHTML=`<div class="no-ev">날짜를 선택하세요</div>`;
+}
+
+/* ── 순위 ── */
+function buildRank(){
+  const s=[...FILMS].sort((a,b)=>b.score-a.score);
+  const h=s.map((f,i)=>`<div class="rc" onclick="openFilm(${f.id})"><div class="rc-poster"><div class="rc-n">${i+1}</div><img src="${f.img}" loading="lazy"></div><div class="rc-info"><div class="rc-title">${f.title}</div><div class="rc-score">${f.stars} ${f.score}</div></div></div>`).join('');
+  document.getElementById('rankTrack').innerHTML=h+h;
+}
+
+/* ── 라인업 ── */
+function buildFilters(){
+  document.getElementById('filterRow').innerHTML=GENRES.map((g,i)=>`<button class="f-btn${i===0?' on':''}" onclick="filt('${g}',this)">${g}</button>`).join('');
+}
+function filt(g,btn){
+  document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');buildLineup(g);
+}
+function buildLineup(g){
+  const list=g==='전체'?FILMS:FILMS.filter(f=>f.genre===g);
+  document.getElementById('lineupGrid').innerHTML=list.map(f=>`<div class="lc" onclick="openFilm(${f.id})"><img src="${f.img}" loading="lazy"><div class="lc-info"><div class="lc-genre">${f.genre}</div><div class="lc-title">${f.title}</div><div class="lc-date">${f.date} · ${f.time}</div></div></div>`).join('');
+}
+
+/* ── 감독 ── */
+let si=0;
+function buildSpotlight(){renderSpot();}
+function spotMove(d){si=(si+d+DIRECTORS.length)%DIRECTORS.length;renderSpot();}
+function renderSpot(){
+  const d=DIRECTORS[si];
+  document.getElementById('spotImg').src=d.img;
+  document.getElementById('spotName').textContent=d.name;
+  document.getElementById('spotNat').textContent=d.nat+' · '+d.role+' 감독';
+  document.getElementById('spotQuote').textContent='"'+d.quote+'"';
+  document.getElementById('spotFilms').innerHTML=d.films.map(f=>`<span class="spot-chip" onclick="const fi=FILMS.find(x=>x.title==='${f}');if(fi)openFilm(fi.id)">${f}</span>`).join('');
+  document.getElementById('spotFilmoBtn').onclick=()=>openFilmo(d);
+}
+
+/* ── 리뷰 ── */
+let userRevs=[],rwStar=3;
+function buildRevs(){
+  document.getElementById('revGrid').innerHTML=[...userRevs,...REVIEWS].map(r=>`<div class="rev-card"><div class="rev-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div><div class="rev-text">${r.text}</div><div class="rev-author">${r.author}</div><div class="rev-film">${r.film}</div></div>`).join('');
+}
+function buildRevFilmSel(){FILMS.forEach(f=>document.getElementById('rwFilm').innerHTML+=`<option>${f.title}</option>`);}
+function buildStars(){document.getElementById('starRow').innerHTML=Array(5).fill(0).map((_,i)=>`<span class="star${i<3?' on':''}" onclick="setStar(${i+1})">★</span>`).join('');}
+function setStar(v){rwStar=v;document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('on',i<v));}
+function submitRev(){
+  const film=document.getElementById('rwFilm').value,name=document.getElementById('rwName').value.trim()||'익명',text=document.getElementById('rwText').value.trim();
+  if(!film||!text){alert('작품과 내용을 입력해주세요.');return;}
+  userRevs.unshift({film,author:name,stars:rwStar,text});
+  buildRevs();alert('리뷰가 등록되었습니다.');
+  document.getElementById('rwFilm').value='';document.getElementById('rwName').value='';document.getElementById('rwText').value='';
+}
+
+/* ── 카운트다운 ── */
+function buildCountdown(){
+  const scr=[{t:'기억의 조각들',h:15,m:0},{t:'어둠 속으로',h:19,m:0},{t:'빛의 회랑',h:15,m:30},{t:'마지막 여름',h:14,m:30},{t:'철의 새벽',h:20,m:0},{t:'메아리',h:16,m:0}];
+  const now=new Date(),today=scr.map(s=>{const d=new Date();d.setHours(s.h,s.m,0,0);return{...s,date:d};}).filter(s=>s.date>now).sort((a,b)=>a.date-b.date);
+  let next=today[0]||(()=>{const d=new Date();d.setDate(d.getDate()+1);d.setHours(15,0,0,0);return{t:'기억의 조각들',date:d};})();
+  document.getElementById('cdFilm').textContent=`다음 상영 — ${next.t}`;
+  function tick(){const diff=Math.max(0,next.date-new Date()),h=Math.floor(diff/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);document.getElementById('cdH').textContent=String(h).padStart(2,'0');document.getElementById('cdM').textContent=String(m).padStart(2,'0');document.getElementById('cdS').textContent=String(s).padStart(2,'0');}
+  tick();setInterval(tick,1000);
+}
+
+/* ── 뉴스레터 ── */
+function nlSub(){const v=document.getElementById('nlEmail').value;if(!v||!v.includes('@')){alert('올바른 이메일을 입력해주세요.');return;}alert(`${v} — 구독 완료!`);document.getElementById('nlEmail').value='';}
+
+/* ── 추천 ── */
+let mMood=null,mCompany=null,mRuntime=null,mVisual=null,mEnding=null;
+function mSetProg(s){const p=[0,20,40,60,80,100];const b=document.getElementById('mProgBar');if(b)b.style.width=p[Math.min(s,5)]+'%';}
+function mNext(a,b){document.getElementById('ms'+a).classList.remove('on');document.getElementById('ms'+b).classList.add('on');mSetProg(b-1);}
+function mAns(step,val){
+  if(step===1){mMood=MATCH_MOODS[val];mNext(1,2);}
+  else if(step===2){mCompany=val;mNext(2,3);}
+  else if(step===3){mRuntime=val;mNext(3,4);}
+  else if(step===4){mVisual=val;mNext(4,5);}
+  else{
+    mEnding=val;
+    document.getElementById('ms5').classList.remove('on');
+    mSetProg(5);
+    let pool=FILMS.filter(f=>mMood.genres.includes(f.genre));
+    if(!pool.length)pool=FILMS;
+    if(mRuntime==='short'){const s=pool.filter(f=>parseInt(f.runtime)<100);if(s.length)pool=s;}
+    if(mRuntime==='long'){const s=pool.filter(f=>parseInt(f.runtime)>=120);if(s.length)pool=s;}
+    const scored=pool.map(f=>{
+      let sc=f.score;
+      if(mVisual==='dark'&&['스릴러','다큐멘터리'].includes(f.genre))sc+=1.8;
+      if(mVisual==='bright'&&['드라마','애니메이션'].includes(f.genre))sc+=1.8;
+      if(mVisual==='vivid'&&['액션','애니메이션'].includes(f.genre))sc+=1.8;
+      if(mVisual==='real'&&f.genre==='다큐멘터리')sc+=2.2;
+      if(mEnding==='moved'&&f.genre==='드라마')sc+=1.4;
+      if(mEnding==='excited'&&['스릴러','액션'].includes(f.genre))sc+=1.4;
+      if(mEnding==='think'&&['다큐멘터리','드라마'].includes(f.genre))sc+=1.4;
+      if(mEnding==='happy'&&['애니메이션','드라마'].includes(f.genre))sc+=1.4;
+      return{...f,sc};
+    }).sort((a,b)=>b.sc-a.sc);
+    const pick=scored.slice(0,3)[Math.floor(Math.random()*Math.min(3,scored.length))];
+    document.getElementById('matchCard').innerHTML=`<div class="match-result-poster"><img src="${pick.img}"></div><div class="match-r-title">${pick.title}</div><div class="match-r-meta">${pick.genre} · ${pick.runtime} · ${pick.date}</div><div style="color:var(--red);margin-top:5px;">${pick.stars}</div>`;
+    document.getElementById('matchBkBtn').onclick=()=>openBk(pick.id);
+    document.getElementById('msR').classList.add('on');
+  }
+}
+function resetMatch(){['ms1','ms2','ms3','ms4','ms5','msR'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('on');});document.getElementById('ms1').classList.add('on');mSetProg(0);mMood=mCompany=mRuntime=mVisual=mEnding=null;}
+
+/* ── 모달 ── */
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function openFilm(id){
+  const f=FILMS.find(x=>x.id===id);
+  document.getElementById('fmImg').src=f.img;
+  document.getElementById('fmGenre').textContent=f.genre;
+  document.getElementById('fmTitle').textContent=f.title;
+  document.getElementById('fmDir').textContent='감독 '+f.dir;
+  document.getElementById('fmDate').textContent=`${f.date} ${f.time}`;
+  document.getElementById('fmVenue').textContent=f.venue;
+  document.getElementById('fmRuntime').textContent=f.runtime;
+  document.getElementById('fmStars').textContent=`${f.stars}  ${f.score}`;
+  document.getElementById('fmBkBtn').onclick=()=>{closeM('filmM');openBk(id);};
+  openM('filmM');
+}
+function openFilmo(d){
+  document.getElementById('filmoName').textContent=d.name;
+  document.getElementById('filmoNat').textContent=d.nat;
+  const dirFilms=FILMS.filter(f=>f.dir===d.name);
+  const grid=document.getElementById('filmoGrid');
+  grid.innerHTML=dirFilms.map(f=>`<div class="filmo-card" onclick="closeM('filmoM');openFilm(${f.id})"><div class="filmo-poster"><img src="${f.img}"></div><div><div class="filmo-title">${f.title}</div><div class="filmo-meta">${f.genre} · ${f.runtime}</div><div class="filmo-score">${f.stars} ${f.score}</div></div></div>`).join('');
+  if(!dirFilms.length){grid.innerHTML=`<div style="padding:1.5rem;font-family:var(--kr);font-weight:200;font-size:.82rem;color:var(--muted);">상영작 없음</div>`;}
+  const extra=d.films.filter(t=>!dirFilms.find(f=>f.title===t));
+  if(extra.length)grid.innerHTML+=`<div style="padding:1.2rem 1.4rem;background:var(--g1);font-family:var(--kr);font-weight:200;font-size:.78rem;color:var(--muted);">${extra.join(' · ')}</div>`;
+  openM('filmoM');
+}
+
+/* ── 예매 ── */
+let selSeats=[];
+function openBk(id){
+  const f=FILMS.find(x=>x.id===id);
+  document.getElementById('bkImg').src=f.img;
+  document.getElementById('bkTitle').textContent=f.title;
+  document.getElementById('bkDate').textContent=f.date;
+  document.getElementById('bkVenue').textContent=f.venue;
+  selSeats=[];document.getElementById('selSeatsTxt').textContent='없음';
+  document.getElementById('payBtn').disabled=true;
+  buildTimeGrid(f);bkGo(1);openM('bkM');
+}
+function buildTimeGrid(f){
+  document.getElementById('timeGrid').innerHTML=[
+    {t:'11:00',h:'메가박스 해운대',s:52},{t:'13:30',h:'부산시민회관',s:28},
+    {t:'15:00',h:f.venue,s:Math.floor(Math.random()*40+10)},
+    {t:f.time,h:f.venue,s:Math.floor(Math.random()*30+5)},
+    {t:'20:30',h:'영화의전당',s:Math.floor(Math.random()*50+15)},
+  ].map(x=>`<div class="tc" onclick="selTime()"><span class="tc-t">${x.t}</span><span class="tc-h">${x.h}</span><span class="tc-s">잔여 ${x.s}석</span></div>`).join('');
+}
+function selTime(){buildSeats();bkGo(2);}
+function buildSeats(){
+  selSeats=[];document.getElementById('selSeatsTxt').textContent='없음';
+  document.getElementById('payBtn').disabled=true;
+  document.getElementById('seatGrid').innerHTML=Array(60).fill(0).map((_,i)=>{const t=Math.random()<.22;return`<div class="seat${t?' taken':''}" onclick="toggleSeat(this,${i+1})">${i+1}</div>`;}).join('');
+}
+function toggleSeat(el,n){
+  if(el.classList.contains('taken'))return;
+  el.classList.toggle('sel');
+  if(el.classList.contains('sel'))selSeats.push(n);
+  else selSeats=selSeats.filter(s=>s!==n);
+  document.getElementById('selSeatsTxt').textContent=selSeats.length?selSeats.sort((a,b)=>a-b).join(', '):'없음';
+  document.getElementById('payBtn').disabled=selSeats.length===0;
+}
+function bkGo(n){
+  [1,2,3].forEach(i=>document.getElementById('bks'+i).classList.toggle('on',i===n));
+  const bb=document.getElementById('bkBackBtn');
+  if(n>1)bb.classList.remove('hidden');else bb.classList.add('hidden');
+  if(n===3)document.getElementById('succCode').textContent='SIFF2026-'+Math.random().toString(36).substr(2,9).toUpperCase();
+}
+function bkBack(){const c=[1,2,3].find(i=>document.getElementById('bks'+i).classList.contains('on'));if(c>1)bkGo(c-1);}
+</script>
 </body>
 </html>
